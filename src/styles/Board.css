@@ -1,0 +1,14 @@
+.board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr); /* Her hücre için eşit alan sağlar */
+  grid-gap: 2px; /* Hücreler arasındaki boşluk */
+  border: 2px solid #000;
+  width: 400px; /* Oyun tahtasının genişliği */
+  height: 400px; /* Oyun tahtasının yüksekliği */
+}
+
+  
+  .board-row {
+    display: flex;
+  }
+  
