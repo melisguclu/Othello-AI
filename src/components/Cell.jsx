@@ -1,10 +1,9 @@
 import React from 'react';
-import '../styles/Cell.css';
 
-const Cell = ({ value }) => {
+const Cell = ({ piece, onClick }) => {
   return (
-    <div className="cell">
-      {value && <div className={`piece ${value}`}></div>}
+    <div className="cell" onClick={onClick}>
+      {piece && <span className={piece === 'B' ? 'black-piece' : 'white-piece'}>{piece}</span>}
     </div>
   );
 };

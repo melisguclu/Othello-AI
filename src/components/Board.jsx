@@ -1,24 +1,20 @@
-import React from 'react'
-import Cell from './Cell.jsx'
-import '../styles/Board.css'
-import  { useState } from 'react';
+import React from 'react';
+import Cell from './Cell';
 
-
-const Board = () => {
-  const initialBoard = Array(8).fill(null).map(() => Array(8).fill(null));
-  const [board, setBoard] = useState(initialBoard);
-
-  const renderCells = () => {
-    return board.map((row, rowIndex) => (
-      row.map((cell, cellIndex) => (
-        <Cell key={`${rowIndex}-${cellIndex}`} value={cell} />
-      ))
-    ));
-  };
-
+const Board = ({ board, onCellClick }) => {
   return (
     <div className="board">
-      {renderCells()}
+      {board.map((row, rowIndex) => (
+        <div key={rowIndex} className="board-row">
+          {row.map((cell, colIndex) => (
+            <Cell
+              key={`${rowIndex}-${colIndex}`}
+              piece={cell}
+              onClick={() => onCellClick(rowIndex, colIndex)}
+            />
+          ))}
+        </div>
+      ))}
     </div>
   );
 };
