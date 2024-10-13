@@ -14,10 +14,10 @@
   border-radius: 50%;
 }
 
-.piece.black {
-  background-color: black;
+.black-piece {
+  color: black;
 }
 
-.piece.white {
-  background-color: white;
+.white-piece {
+  color: white;
 }
