@@ -8,6 +8,7 @@ const Modal = ({ onClose, onSelect }) => {
 
   const handleSelect = (option) => {
     setPlayType(option.value);
+    onSelect(option.value);
     console.log(option.value);
   };
 
