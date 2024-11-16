@@ -6,7 +6,7 @@ const ScoreBoard = ({ score }) => {
       { 
         display: 'flex', 
         justifyContent: 'space-around', 
-        backgroundColor: 'lightgray' ,
+        backgroundColor: 'red' ,
         gap: '20px',
       }
      } >
