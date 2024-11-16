@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Board from './Board';
 import ScoreBoard from './ScoreBoard';
-import SettingsButton from './SettingsButton';
 
 const initialBoard = () => {
   const board = Array(8).fill(null).map(() => Array(8).fill(null));
@@ -138,7 +137,6 @@ const Game = () => {
 
   return (
     <div className="game-container">
-      <SettingsButton />
       <ScoreBoard score={score} />
       <h3>{currentPlayer === 'B' ? "Siyah'ın Sırası" : "Beyaz'ın Sırası"}</h3>
       <Board board={board} onCellClick={handleCellClick} validMoves={validMoves} />
