@@ -18,10 +18,23 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  perspective: 1000px; /* Add perspective for 3D effect */
+  position: relative;
 }
 
 .cell.flipping .black-piece,
 .cell.flipping .white-piece {
   animation: flip 0.9s;
+}
+
+.cell.latest .black-piece::after,
+.cell.latest .white-piece::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }

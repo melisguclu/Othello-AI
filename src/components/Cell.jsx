@@ -2,7 +2,7 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import '../styles/Cell.css';
 
-const Cell = ({ piece, onClick, isValidMove }) => {
+const Cell = ({ piece, onClick, isValidMove , isLatest }) => {
 
   const [isFlipping, setIsFlipping] = useState(false);
 
@@ -16,7 +16,7 @@ const Cell = ({ piece, onClick, isValidMove }) => {
 
   return (
     <div
-      className={`cell ${isFlipping ? 'flipping' : ''} ${isValidMove ? 'valid-move' : ''}`}
+      className={`cell ${isFlipping ? 'flipping' : ''} ${isValidMove ? 'valid-move' : ''} ${isLatest ? 'latest' : ''}`}
       onClick={onClick}
       style={{ backgroundColor: isValidMove ? 'gray' : 'transparent' }} // Geçerli hamleler gri renkte olacak
     >

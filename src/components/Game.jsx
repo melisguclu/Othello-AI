@@ -20,7 +20,7 @@ const Game = () => {
   const [validMoves, setValidMoves] = useState([]); // geçerli hamleleri tutmak için state
   const [playType, setPlayType] = useState('');
   const [showModal, setShowModal] = useState(true);
-
+  const [latestDisc, setLatestDisc] = useState(null);
 
 
   useEffect(() => {
@@ -47,6 +47,7 @@ const Game = () => {
   }, [currentPlayer, validMoves, playType]);
 
   const handleCellClick = (row, col) => {
+    setLatestDisc({ row, col });
     if (isValidMove(row, col)) {
       const newBoard = [...board];
       newBoard[row][col] = currentPlayer;
@@ -173,7 +174,7 @@ const Game = () => {
       {showModal && <Modal onClose={handleModalClose} onSelect={handlePlayTypeSelect} />}
       <ScoreBoard score={score} playType={playType} />
       <h3>{currentPlayer === 'B' ? "Siyah'ın Sırası" : "Beyaz'ın Sırası"}</h3>
-      <Board board={board} onCellClick={handleCellClick} validMoves={validMoves} />
+      <Board board={board} onCellClick={handleCellClick} validMoves={validMoves} latestDisc= { latestDisc } />
     </div>
   );
 };

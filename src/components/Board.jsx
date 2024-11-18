@@ -1,7 +1,7 @@
 import React from 'react';
 import Cell from './Cell';
 
-const Board = ({ board, onCellClick, validMoves }) => {
+const Board = ({ board, onCellClick, validMoves , latestDisc }) => {
   return (
     <table className="board">
       <tbody>
@@ -15,6 +15,7 @@ const Board = ({ board, onCellClick, validMoves }) => {
                     piece={cell}
                     onClick={() => onCellClick(rowIndex, colIndex)}
                     isValidMove={isValidMove}
+                    isLatest={latestDisc && latestDisc.row === rowIndex && latestDisc.col === colIndex}
                   />
                 </td>
               );
