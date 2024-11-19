@@ -3,6 +3,7 @@ import Board from './Board';
 import ScoreBoard from './ScoreBoard';
 import Modal from './Modal';
 import { makeRandomMove} from '../ai-players/RandomAI';
+import { makeMinimaxMove } from '../ai-players/MinimaxAI';
 
 const initialBoard = () => {
   const board = Array(8).fill(null).map(() => Array(8).fill(null));
@@ -21,15 +22,8 @@ const Game = () => {
   const [playType, setPlayType] = useState('');
   const [showModal, setShowModal] = useState(true);
   const [latestDisc, setLatestDisc] = useState(null);
+  const [aiType, setAiType] = useState(true);
 
-
-  useEffect(() => {
-    if (playType === 'human-vs-ai') {
-      // Initialize game for Human vs AI
-    } else if (playType === 'human-vs-human') {
-      // Initialize game for Human vs Human
-    }
-  }, [playType]);
 
   useEffect(() => {
     highlightValidMoves(); 
@@ -38,13 +32,21 @@ const Game = () => {
   useEffect(() => {
     if (playType === 'human-vs-ai' && currentPlayer === 'W') {
       if (validMoves.length > 0) {
-        const [row, col] = makeRandomMove(validMoves);
-        setTimeout(() => {
-          handleCellClick(row, col);
-        }, 1000);
+        let move;
+        if (aiType === 'random') {
+          move = makeRandomMove(validMoves);
+        } else if (aiType === 'minimax') {
+          move = makeMinimaxMove(board, currentPlayer);
+        }
+        if (move) {
+          const [row, col] = move;
+          setTimeout(() => {
+            handleCellClick(row, col);
+          }, 1000);
+        }
       }
     }
-  }, [currentPlayer, validMoves, playType]);
+  }, [currentPlayer, validMoves, playType, aiType]);
 
   const handleCellClick = (row, col) => {
     setLatestDisc({ row, col });
@@ -58,6 +60,14 @@ const Game = () => {
       setCurrentPlayer(currentPlayer === 'B' ? 'W' : 'B');
       checkGameOver();
     }
+  };
+
+  const handleModalSelect = ({ playType, aiType }) => {
+    setPlayType(playType);
+    if (playType === 'human-vs-ai') {
+      setAiType(aiType);
+    }
+    setShowModal(false);
   };
 
   const handleModalClose = () => {
@@ -171,9 +181,9 @@ const Game = () => {
 
   return (
     <div className="game-container">
-      {showModal && <Modal onClose={handleModalClose} onSelect={handlePlayTypeSelect} />}
-      <ScoreBoard score={score} playType={playType} />
-      <h3>{currentPlayer === 'B' ? "Siyah'ın Sırası" : "Beyaz'ın Sırası"}</h3>
+      {showModal && <Modal onClose={() => setShowModal(false)} onSelect={handleModalSelect} />}
+      <ScoreBoard score={score} playType={playType} aiType={aiType} />
+      <h3>{currentPlayer === 'B' ? "Move: Black" : "Move: Right"}</h3>
       <Board board={board} onCellClick={handleCellClick} validMoves={validMoves} latestDisc= { latestDisc } />
     </div>
   );
