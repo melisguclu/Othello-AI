@@ -27,7 +27,8 @@ const Modal = ({ onClose, onSelect }) => {
 
   const aiTypeOptions = [
     { value: 'random', label: 'Random' },
-    { value: 'minimax', label: 'Minimax' }
+    { value: 'minimax', label: 'Minimax' },
+    { value: 'mcts', label: 'Monte Carlo Tree Search' }
   ];
 
   return (

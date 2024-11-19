@@ -4,6 +4,7 @@ import ScoreBoard from './ScoreBoard';
 import Modal from './Modal';
 import { makeRandomMove} from '../ai-players/RandomAI';
 import { makeMinimaxMove } from '../ai-players/MinimaxAI';
+import { makeMCTSMove } from '../ai-players/MCTS';
 
 const initialBoard = () => {
   const board = Array(8).fill(null).map(() => Array(8).fill(null));
@@ -37,6 +38,8 @@ const Game = () => {
           move = makeRandomMove(validMoves);
         } else if (aiType === 'minimax') {
           move = makeMinimaxMove(board, currentPlayer);
+        } else if (aiType === 'mcts') {
+          move = makeMCTSMove(board, currentPlayer);
         }
         if (move) {
           const [row, col] = move;
@@ -48,19 +51,19 @@ const Game = () => {
     }
   }, [currentPlayer, validMoves, playType, aiType]);
 
-  const handleCellClick = (row, col) => {
-    setLatestDisc({ row, col });
-    if (isValidMove(row, col)) {
-      const newBoard = [...board];
-      newBoard[row][col] = currentPlayer;
+  // const handleCellClick = (row, col) => {
+  //   setLatestDisc({ row, col });
+  //   if (isValidMove(row, col)) {
+  //     const newBoard = [...board];
+  //     newBoard[row][col] = currentPlayer;
 
-      flipPieces(newBoard, row, col);
-      updateScore(newBoard);
-      setBoard(newBoard);
-      setCurrentPlayer(currentPlayer === 'B' ? 'W' : 'B');
-      checkGameOver();
-    }
-  };
+  //     flipPieces(newBoard, row, col);
+  //     updateScore(newBoard);
+  //     setBoard(newBoard);
+  //     setCurrentPlayer(currentPlayer === 'B' ? 'W' : 'B');
+  //     checkGameOver();
+  //   }
+  // };
 
   const handleModalSelect = ({ playType, aiType }) => {
     setPlayType(playType);
@@ -89,8 +92,10 @@ const Game = () => {
     setScore(newScore);
   };
 
-  const isValidMove = (row, col) => {
-    if (board[row][col] !== null) return false; // doluysa
+  const isValidMove = (board, row, col, currentPlayer) => {
+    if (row < 0 || row >= 8 || col < 0 || col >= 8) return false;
+    if (!board[row] || board[row][col] !== null) return false; // board[row] control
+  
     const directions = [
       { x: 1, y: 0 }, { x: -1, y: 0 },
       { x: 0, y: 1 }, { x: 0, y: -1 },
@@ -98,7 +103,7 @@ const Game = () => {
       { x: 1, y: -1 }, { x: -1, y: 1 }
     ];
   
-    let isValid = false; // Geçerli hamle olup olmadığını kontrol etmek için
+    let isValid = false;
   
     for (const { x, y } of directions) {
       let r = row + y;
@@ -106,50 +111,68 @@ const Game = () => {
       let hasOpponentPiece = false;
   
       while (r >= 0 && r < 8 && c >= 0 && c < 8) {
-        if (board[r][c] === null) break; // Boş hücreye ulaşırsak, yönü bırakıyoruz
+        if (!board[r] || board[r][c] === undefined) break; // board[r] kontrolü eklendi
+        if (board[r][c] === null) break;
         if (board[r][c] === currentPlayer) {
           if (hasOpponentPiece) {
-            isValid = true; // Rakip taşı geçtikten sonra kendi taşımıza ulaşırsak, hamle geçerli
+            isValid = true;
           }
-          break; // Kendi taşımıza ulaştığımızda o yönü bırakabiliriz
+          break;
         }
-        hasOpponentPiece = true; // Rakip taş bulundu
+        hasOpponentPiece = true;
         r += y;
         c += x;
       }
     }
+  
     return isValid;
   };
   
 
+  const handleCellClick = (row, col) => {
+    if (isValidMove(board, row, col, currentPlayer)) {
+      const newBoard = [...board];
+      newBoard[row][col] = currentPlayer;
+  
+      setLatestDisc({ row, col }); 
+  
+      flipPieces(newBoard, row, col, currentPlayer);
+      updateScore(newBoard);
+      setBoard(newBoard);
+      setCurrentPlayer(currentPlayer === 'B' ? 'W' : 'B');
+      checkGameOver();
+    }
+  };
+  
   const highlightValidMoves = () => {
     const moves = [];
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
-        if (isValidMove(row, col)) {
-          moves.push([row, col]); // Geçerli hamleleri kaydet
+        if (isValidMove(board, row, col, currentPlayer)) {
+          moves.push([row, col]);
         }
       }
     }
-    setValidMoves(moves); // State'e geçerli hamleleri güncelle
+    setValidMoves(moves);
   };
-
+  
   const checkGameOver = () => {
     const hasMoves = (player) => {
       for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
-          if (isValidMove(row, col)) {
+          if (isValidMove(board, row, col, player)) {
             return true;
           }
         }
       }
       return false;
     };
-
+  
     if (!hasMoves('B') && !hasMoves('W')) {
       alert("Oyun Bitti! Skor: B: " + score.B + " W: " + score.W);
     }
   };
+  
 
   const flipPieces = (newBoard, row, col) => {
     const directions = [
