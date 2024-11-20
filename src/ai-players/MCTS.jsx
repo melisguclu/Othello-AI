@@ -1,7 +1,5 @@
-// MCTS.js
-
 // Monte Carlo Tree Search fonksiyonu
-export const makeMCTSMove = (board, currentPlayer, iterations = 3000) => {
+export const makeMCTSMove = (board, currentPlayer, iterations = 1000) => {
   class Node {
     constructor(state, parent = null) {
       this.state = state;
@@ -17,13 +15,12 @@ export const makeMCTSMove = (board, currentPlayer, iterations = 3000) => {
     }
 
     bestChild() {
-      if (this.children.length === 0) {
-        return null;
-      }
-
+      console.log("bestChild");
+      if (this.children.length === 0) return null;
+      const epsilon = 1e-6; // Bölme hatalarını önlemek için
       return this.children.reduce((best, child) => {
-        const bestUCB = (best.wins / best.visits) + Math.sqrt(2 * Math.log(this.visits) / best.visits);
-        const childUCB = (child.wins / child.visits) + Math.sqrt(2 * Math.log(this.visits) / child.visits);
+        const bestUCB = (best.wins / (best.visits + epsilon)) + Math.sqrt(2 * Math.log(this.visits + epsilon) / (best.visits + epsilon));
+        const childUCB = (child.wins / (child.visits + epsilon)) + Math.sqrt(2 * Math.log(this.visits + epsilon) / (child.visits + epsilon));
         return childUCB > bestUCB ? child : best;
       }, this.children[0]);
     }
@@ -34,7 +31,7 @@ export const makeMCTSMove = (board, currentPlayer, iterations = 3000) => {
   for (let i = 0; i < iterations; i++) {
     let node = selection(root);
     if (!node) break;
-    let result = simulation(node.state, currentPlayer);
+    const result = simulation(node.state, currentPlayer);
     backPropagation(node, result);
   }
 
@@ -42,6 +39,7 @@ export const makeMCTSMove = (board, currentPlayer, iterations = 3000) => {
   return bestMoveNode ? getMoveFromStateDifference(board, bestMoveNode.state) : null;
 
   function selection(node) {
+    console.log("selection");
     while (node.isFullyExpanded()) {
       const bestChild = node.bestChild();
       if (!bestChild) return node;
@@ -51,18 +49,19 @@ export const makeMCTSMove = (board, currentPlayer, iterations = 3000) => {
   }
 
   function expansion(node) {
+    console.log("expansion");
     const validMoves = getValidMoves(node.state, currentPlayer);
-    for (const [row, col] of validMoves) {
+    validMoves.forEach(([row, col]) => {
       const newState = copyBoard(node.state);
       makeMove(newState, row, col, currentPlayer);
       const childNode = new Node(newState, node);
       node.children.push(childNode);
-      return childNode;
-    }
-    return node;
+    });
+    return node.children[0]; // İlk çocuk düğümü döner
   }
 
   function simulation(state, player) {
+    console.log("simulation");
     let simulatedState = copyBoard(state);
     let currentSimPlayer = player;
 
@@ -78,9 +77,10 @@ export const makeMCTSMove = (board, currentPlayer, iterations = 3000) => {
   }
 
   function backPropagation(node, result) {
+    console.log("backprogation");
     while (node !== null) {
       node.visits++;
-      node.wins += result;
+      node.wins += result > 0 ? 1 : 0;
       node = node.parent;
     }
   }

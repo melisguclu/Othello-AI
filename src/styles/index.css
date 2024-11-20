@@ -1,5 +1,7 @@
 body {
   font-family: Arial, sans-serif;
+  background-color: #f8f7df;
+  margin: 0 ;
 }
 
 .game-container {
@@ -12,38 +14,98 @@ body {
   display: flex;
   flex-direction: column;
   background-color: green;
+  margin: 0 auto;
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 600px; 
+  aspect-ratio: 1; 
 }
-
 .board-row {
   display: flex;
 }
-
 
 .score-board {
   margin-bottom: 20px;
 }
 
 .cell {
-  width: 70px;
-  height: 70px;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  position: relative;
+  transition: background-color 0.3s ease;
+  border: none;
 }
 
 .black-piece {
   background-color: black;
   border-radius: 50%;
-  width: 80%;
-  height: 80%;
 }
 
 .white-piece {
   background-color: white;
   border-radius: 50%;
-  width: 80%;
-  height: 80%;
+}
+
+.black-piece, .white-piece {
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; /* Yatay kaydırmayı engeller */
+}
+
+.board-cell {
+  position: relative;
+  width: 12.5%; /* Her hücre tahtanın %12.5'ine denk gelir (8x8 için) */
+  aspect-ratio: 1; /* Hücreyi kare yapar */
+  border: 1px solid #000; /* Hücre kenarlıkları */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: green; /* Tahtanın yeşil zemin rengi */
+}
+
+
+.cell.valid-move {
+  background-color: gray; /* Geçerli hamleleri belirtmek için gri arka plan */
+}
+
+.cell.latest::after {
+  content: '';
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  background-color: red;
+  border-radius: 50%;
+}
+
+
+
+/* Responsive medya sorguları */
+@media (max-width: 768px) {
+  .board {
+    max-width: 90%; 
+  }
+
+  .board-cell {
+    border-width: 0.5px; 
+  }
+}
+
+@media (max-width: 480px) {
+  .board {
+    max-width: 90%; 
+  }
 }
 
 

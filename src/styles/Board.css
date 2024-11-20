@@ -1,7 +1,0 @@
-.board {
-  border-collapse: separate;
-  border-spacing: 5px; /* Adjust the spacing value as needed */
-  width: 400px; /* Oyun tahtasının genişliği */
-  height: 400px; /* Oyun tahtasının yüksekliği */
-  border: 2px solid #000;
-}

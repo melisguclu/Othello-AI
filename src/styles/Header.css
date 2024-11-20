@@ -2,15 +2,19 @@
   background-color: #333;
   color: white;
   padding: 1rem;
-  text-align: center;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100vw !important;
+  box-sizing: border-box; /* Padding ve kenarlıkları hesaba kat */
+  max-width: 100%; /* Responsive durumda tam genişliği koru */
+  position: relative; /* Sabit bir konum sağlar */
 }
 
 .header h1 {
   margin: 0;
   font-size: 2rem;
+  text-align: left;
 }
 
 .github-icon {
@@ -20,3 +24,18 @@
   align-items: center;
 }
 
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: row; /* Dikey hizalama yapma */
+    padding: 1rem;
+  }
+
+  .header h1 {
+    font-size: 1.8rem; /* Daha küçük yazı boyutu */
+  }
+
+  .github-icon {
+    font-size: 1.8rem; /* Simge boyutunu mobil için optimize et */
+  }
+}

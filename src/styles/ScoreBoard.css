@@ -1,0 +1,39 @@
+.score-board {
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
+  background-color: #f3eaea;
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+  flex-wrap: wrap; 
+}
+
+.score-board h2 {
+  font-size: 16px;
+  margin: 0;
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .score-board {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .score-board h2 {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .score-board {
+    padding: 10px;
+  }
+
+  .score-board h2 {
+    font-size: 12px;
+  }
+}

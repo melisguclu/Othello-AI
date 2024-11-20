@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/ScoreBoard.css';
 
 const ScoreBoard = ({ score, playType, aiType }) => {
   return (
@@ -10,5 +11,7 @@ const ScoreBoard = ({ score, playType, aiType }) => {
     </div>
   );
 };
+
+
 
 export default ScoreBoard;
