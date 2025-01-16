@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import Board from './Board';
 import ScoreBoard from './ScoreBoard';
 import Modal from './Modal';
+import GameOverModal from './GameOverModal';
+
 import { makeMinimaxMove } from '../ai-players/MinimaxAI';
 import { makeMCTSMove } from '../ai-players/MCTS';
 import { makeRandomMove } from '../ai-players/Random';
@@ -33,6 +35,8 @@ const Game = () => {
   const [showModal, setShowModal] = useState(true);
   const [latestDisc, setLatestDisc] = useState(null);
   const [aiType, setAiType] = useState('');
+  const [gameOver, setGameOver] = useState(false);
+  const [winner, setWinner] = useState(null);
 
   useEffect(() => {
     setValidMoves(getValidMoves(board, currentPlayer));
@@ -49,9 +53,14 @@ const Game = () => {
         setCurrentPlayer(currentPlayer === 'B' ? 'W' : 'B');
 
         if (isGameOver(newBoard)) {
-          alert(
-            `Oyun Bitti! Skor: Siyah (B): ${score.B} - Beyaz (W): ${score.W}`
-          );
+          const winner =
+            score.B > score.W
+              ? 'Siyah (B)'
+              : score.B < score.W
+                ? 'Beyaz (W)'
+                : null;
+          setWinner(winner);
+          setGameOver(true);
         }
       }
     },
@@ -100,16 +109,35 @@ const Game = () => {
     setShowModal(false);
   };
 
+  const handleRestart = () => {
+    setBoard(initialBoard());
+    setScore({ B: 2, W: 2 });
+    setCurrentPlayer('B');
+    setGameOver(false);
+    setWinner(null);
+    setShowModal(true);
+  };
+
   return (
     <div className="game-container">
       {showModal && (
         <Modal
           onClose={() => setShowModal(false)}
-          onSelect={handleModalSelect}
+          onSelect={({ playType, aiType }) => {
+            setPlayType(playType);
+            setAiType(aiType);
+          }}
+        />
+      )}
+      {gameOver && (
+        <GameOverModal
+          winner={winner}
+          score={score}
+          onRestart={handleRestart}
         />
       )}
       <ScoreBoard score={score} playType={playType} aiType={aiType} />
-      <h3>{currentPlayer === 'B' ? "Siyah'ın Sırası" : "Beyaz'ın Sırası"}</h3>
+      {/* <h3>{currentPlayer === 'B' ? "Siyah'ın Sırası" : "Beyaz'ın Sırası"}</h3> */}
       <Board
         board={board}
         onCellClick={handleCellClick}
