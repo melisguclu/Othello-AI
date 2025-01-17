@@ -1,5 +1,4 @@
 import React from 'react';
-import '../styles/ScoreBoard.css';
 import styled from 'styled-components';
 
 const ScoreBoard = ({ score, playType, aiType }) => {

@@ -1,7 +1,7 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #f8f7df;
-  margin: 0 ;
+  background-color: #f0f0f0;
+  margin: 0;
 }
 
 .game-container {
@@ -17,8 +17,8 @@ body {
   margin: 0 auto;
   border-collapse: collapse;
   width: 100%;
-  max-width: 600px; 
-  aspect-ratio: 1; 
+  max-width: 600px;
+  aspect-ratio: 1;
 }
 .board-row {
   display: flex;
@@ -50,7 +50,8 @@ body {
   border-radius: 50%;
 }
 
-.black-piece, .white-piece {
+.black-piece,
+.white-piece {
   width: 70%;
   height: 70%;
   border-radius: 50%;
@@ -75,7 +76,6 @@ body {
   background-color: green; /* Tahtanın yeşil zemin rengi */
 }
 
-
 .cell.valid-move {
   background-color: gray; /* Geçerli hamleleri belirtmek için gri arka plan */
 }
@@ -89,16 +89,14 @@ body {
   border-radius: 50%;
 }
 
-
-
 /* Responsive medya sorguları */
 @media (max-width: 768px) {
   .board {
-    max-width: 90%; 
+    max-width: 90%;
   }
 
   .board-cell {
-    border-width: 0.5px; 
+    border-width: 0.5px;
   }
   .cell.latest::after {
     width: 1px;
@@ -108,8 +106,6 @@ body {
 
 @media (max-width: 480px) {
   .board {
-    max-width: 90%; 
+    max-width: 90%;
   }
 }
-
-

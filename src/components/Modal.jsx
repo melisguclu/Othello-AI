@@ -5,7 +5,7 @@ import 'react-dropdown/style.css';
 
 const Modal = ({ onClose, onSelect }) => {
   const [playType, setPlayType] = useState('human-vs-ai');
-  const [aiType, setAiType] = useState('random');
+  const [aiType, setAiType] = useState('minimax');
 
   const handlePlayTypeSelect = (option) => {
     setPlayType(option.value);
@@ -22,13 +22,13 @@ const Modal = ({ onClose, onSelect }) => {
 
   const playTypeOptions = [
     { value: 'human-vs-ai', label: 'Human vs AI' },
-    { value: 'human-vs-human', label: 'Human vs Human' }
+    { value: 'human-vs-human', label: 'Human vs Human' },
   ];
 
   const aiTypeOptions = [
-    { value: 'random', label: 'Random' },
     { value: 'minimax', label: 'Minimax' },
-    { value: 'mcts', label: 'Monte Carlo Tree Search' }
+    { value: 'random', label: 'Random' },
+    { value: 'mcts', label: 'Monte Carlo Tree Search' },
   ];
 
   return (
@@ -38,25 +38,35 @@ const Modal = ({ onClose, onSelect }) => {
         <Dropdown
           options={playTypeOptions}
           onChange={handlePlayTypeSelect}
-          value={playTypeOptions.find(option => option.value === playType)}
+          value={playTypeOptions.find((option) => option.value === playType)}
           placeholder="Select Play Type"
         />
-        <h2>Select AI Type</h2>
-        <Dropdown
-          options={aiTypeOptions}
-          onChange={(option) => setAiType(option.value)}
-          value={aiTypeOptions.find(option => option.value === aiType)}
-          placeholder="Select AI Type"
-          disabled={playType !== 'human-vs-ai'}
-        />
-        <button onClick={handleSubmit} className="submit-button" style={{
-          backgroundColor: 'black',
-          color: 'white',
-          padding: '10px',
-          marginTop: '30px',
-          borderRadius: '5px',
-          cursor: 'pointer'
-        }} >Start Game</button>
+        {playType === 'human-vs-ai' && (
+          <>
+            <h2>Select AI Type</h2>
+            <Dropdown
+              options={aiTypeOptions}
+              onChange={(option) => setAiType(option.value)}
+              value={aiTypeOptions.find((option) => option.value === aiType)}
+              placeholder="Select AI Type"
+            />
+          </>
+        )}
+
+        <button
+          onClick={handleSubmit}
+          className="submit-button"
+          style={{
+            backgroundColor: 'black',
+            color: 'white',
+            padding: '10px',
+            marginTop: '30px',
+            borderRadius: '5px',
+            cursor: 'pointer',
+          }}
+        >
+          Start Game
+        </button>
       </div>
     </div>
   );
