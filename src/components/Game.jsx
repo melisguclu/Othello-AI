@@ -44,32 +44,36 @@ const Game = () => {
 
   const handleCellClick = useCallback(
     (row, col) => {
+      if (playType === 'human-vs-ai' && currentPlayer === 'W') {
+        return; //if it's AI's turn, dont let human player make a move
+      }
+
       if (isValidMove(board, row, col, currentPlayer)) {
         const newBoard = copyBoard(board);
         makeMove(newBoard, row, col, currentPlayer);
         setLatestDisc({ row, col });
         updateScore(newBoard);
         setBoard(newBoard);
-        setCurrentPlayer(currentPlayer === 'B' ? 'W' : 'B');
 
         if (isGameOver(newBoard)) {
           const winner =
-            score.B > score.W
-              ? 'Siyah (B)'
-              : score.B < score.W
-                ? 'Beyaz (W)'
-                : null;
+            score.B > score.W ? 'Black' : score.B < score.W ? 'White' : null;
           setWinner(winner);
           setGameOver(true);
+        } else {
+          setCurrentPlayer(currentPlayer === 'B' ? 'W' : 'B');
         }
       }
     },
-    [board, currentPlayer, score]
+    [board, currentPlayer, playType, score]
   );
 
   useEffect(() => {
     if (playType === 'human-vs-ai' && currentPlayer === 'W') {
-      if (validMoves.length === 0) return;
+      if (validMoves.length === 0) {
+        setCurrentPlayer('B'); //if AI has no valid moves, skip its turn
+        return;
+      }
 
       let move;
       if (aiType === 'random') {
@@ -83,11 +87,28 @@ const Game = () => {
       if (move) {
         const [row, col] = move;
         setTimeout(() => {
-          handleCellClick(row, col);
+          const newBoard = copyBoard(board);
+          makeMove(newBoard, row, col, currentPlayer);
+          setLatestDisc({ row, col }); // save the position of the disc that was played
+          updateScore(newBoard);
+          setBoard(newBoard);
+
+          if (isGameOver(newBoard)) {
+            const winner =
+              score.B > score.W
+                ? 'Siyah (B)'
+                : score.B < score.W
+                  ? 'Beyaz (W)'
+                  : null;
+            setWinner(winner);
+            setGameOver(true);
+          } else {
+            setCurrentPlayer('B'); // move to human player after AI
+          }
         }, 1000);
       }
     }
-  }, [currentPlayer, playType, aiType, validMoves, board, handleCellClick]);
+  }, [currentPlayer, playType, aiType, validMoves, board, score]);
 
   const updateScore = (newBoard) => {
     const newScore = { B: 0, W: 0 };
@@ -100,7 +121,6 @@ const Game = () => {
     setScore(newScore);
   };
 
-  // Modal Seçimi
   const handleModalSelect = ({ playType, aiType }) => {
     setPlayType(playType);
     if (playType === 'human-vs-ai') {
@@ -116,6 +136,7 @@ const Game = () => {
     setGameOver(false);
     setWinner(null);
     setShowModal(true);
+    setLatestDisc(null);
   };
 
   return (
@@ -137,7 +158,6 @@ const Game = () => {
         />
       )}
       <ScoreBoard score={score} playType={playType} aiType={aiType} />
-      {/* <h3>{currentPlayer === 'B' ? "Siyah'ın Sırası" : "Beyaz'ın Sırası"}</h3> */}
       <Board
         board={board}
         onCellClick={handleCellClick}
