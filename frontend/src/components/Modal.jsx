@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import '../styles/Modal.css';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
+import { useNavigate } from 'react-router-dom';
 
 const Modal = ({ onClose, onSelect }) => {
   const [playType, setPlayType] = useState('human-vs-ai');
   const [aiType, setAiType] = useState('minimax');
+  const navigate = useNavigate();
 
   const handlePlayTypeSelect = (option) => {
     setPlayType(option.value);
@@ -66,6 +68,21 @@ const Modal = ({ onClose, onSelect }) => {
           }}
         >
           Start Game
+        </button>
+
+        <button
+          className="login-button"
+          onClick={() => navigate('/register')}
+          style={{
+            backgroundColor: 'black',
+            color: 'white',
+            padding: '10px',
+            marginTop: '30px',
+            borderRadius: '5px',
+            cursor: 'pointer',
+          }}
+        >
+          Register
         </button>
       </div>
     </div>
