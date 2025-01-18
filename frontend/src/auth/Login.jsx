@@ -1,63 +1,19 @@
-import React from 'react';
-import { useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/userContext';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 export default function Login() {
-  const styles = {
-    container: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '100vh',
-      backgroundColor: '#f5f5f5',
-      fontFamily: 'Arial, sans-serif',
-    },
-    form: {
-      display: 'flex',
-      flexDirection: 'column',
-      backgroundColor: '#fff',
-      padding: '20px',
-      borderRadius: '10px',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      width: '300px',
-    },
-    label: {
-      marginBottom: '5px',
-      fontWeight: 'bold',
-      fontSize: '14px',
-      color: '#333',
-    },
-    input: {
-      marginBottom: '15px',
-      padding: '10px',
-      fontSize: '14px',
-      border: '1px solid #ddd',
-      borderRadius: '5px',
-      outline: 'none',
-    },
-    button: {
-      padding: '10px',
-      fontSize: '14px',
-      fontWeight: 'bold',
-      color: '#fff',
-      backgroundColor: '#007bff',
-      border: 'none',
-      borderRadius: '5px',
-      cursor: 'pointer',
-    },
-    buttonHover: {
-      backgroundColor: '#0056b3',
-    },
-    header: {
-      marginBottom: '20px',
-      color: '#333',
-    },
-  };
-
   const navigate = useNavigate();
   const [data, setData] = useState({
     email: '',
@@ -76,7 +32,6 @@ export default function Login() {
         setUser(response.data.user); // Update the user context immediately
         setData({ email: '', password: '' });
         toast.success(response.data.message);
-        // navigate('/');
         navigate('/profile');
       }
     } catch (error) {
@@ -85,45 +40,67 @@ export default function Login() {
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.header}>LOgin</h1>
-      <form style={styles.form} onSubmit={loginUser}>
-        <label style={styles.label} htmlFor="email">
-          Email
-        </label>
-        <input
-          style={styles.input}
-          type="email"
-          id="email"
-          name="email"
-          value={data.email}
-          onChange={(e) => setData({ ...data, email: e.target.value })}
-        />
-        <label style={styles.label} htmlFor="password">
-          Password
-        </label>
-        <input
-          style={styles.input}
-          type="password"
-          id="password"
-          name="password"
-          value={data.password}
-          onChange={(e) => setData({ ...data, password: e.target.value })}
-        />
-        <button
-          style={styles.button}
-          onMouseOver={(e) =>
-            (e.target.style.backgroundColor =
-              styles.buttonHover.backgroundColor)
-          }
-          onMouseOut={(e) =>
-            (e.target.style.backgroundColor = styles.button.backgroundColor)
-          }
-          type="submit"
-        >
-          Login
-        </button>
-      </form>
+    <div className="flex items-center justify-center h-screen bg-gray-100">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-center text-xl font-bold">Login</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form className="space-y-4" onSubmit={loginUser}>
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Email
+              </label>
+              <Input
+                type="email"
+                id="email"
+                name="email"
+                value={data.email}
+                onChange={(e) => setData({ ...data, email: e.target.value })}
+                placeholder="Enter your email"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Password
+              </label>
+              <Input
+                type="password"
+                id="password"
+                name="password"
+                value={data.password}
+                onChange={(e) => setData({ ...data, password: e.target.value })}
+                placeholder="Enter your password"
+              />
+            </div>
+            <Button type="submit" className="w-full text-white">
+              Login
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter className="flex justify-center">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/register')}
+            className="text-blue-600 hover:text-blue-700"
+          >
+            Don't have an account? Register
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/')}
+            className="text-blue-600 hover:text-blue-700"
+          >
+            Back to Game
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
