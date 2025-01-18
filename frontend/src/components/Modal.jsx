@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
-import '../styles/Modal.css';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import { useNavigate } from 'react-router-dom';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 const Modal = ({ onClose, onSelect }) => {
   const [playType, setPlayType] = useState('human-vs-ai');
@@ -34,58 +42,59 @@ const Modal = ({ onClose, onSelect }) => {
   ];
 
   return (
-    <div className="modal">
-      <div className="modal-content">
-        <h2>Select Play Type</h2>
-        <Dropdown
-          options={playTypeOptions}
-          onChange={handlePlayTypeSelect}
-          value={playTypeOptions.find((option) => option.value === playType)}
-          placeholder="Select Play Type"
-        />
+    <Dialog>
+      <DialogTrigger asChild>
+        <button
+          style={{
+            padding: '10px 20px',
+            backgroundColor: '#000',
+            color: '#fff',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            margin: '40px',
+          }}
+        >
+          Start Game
+        </button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogTitle>Select Play Type</DialogTitle>
+        <div style={{ marginBottom: '20px' }}>
+          <Dropdown
+            options={playTypeOptions}
+            onChange={handlePlayTypeSelect}
+            value={playTypeOptions.find((option) => option.value === playType)}
+            placeholder="Select Play Type"
+          />
+        </div>
         {playType === 'human-vs-ai' && (
-          <>
-            <h2>Select AI Type</h2>
+          <div style={{ marginBottom: '20px' }}>
+            <DialogTitle style={{ marginBottom: '15px' }}>
+              Select AI Type
+            </DialogTitle>
             <Dropdown
               options={aiTypeOptions}
               onChange={(option) => setAiType(option.value)}
               value={aiTypeOptions.find((option) => option.value === aiType)}
               placeholder="Select AI Type"
             />
-          </>
+          </div>
         )}
-
-        <button
+        <Button
           onClick={handleSubmit}
-          className="submit-button"
           style={{
             backgroundColor: 'black',
             color: 'white',
             padding: '10px',
-            marginTop: '30px',
             borderRadius: '5px',
             cursor: 'pointer',
+            height: '45px',
           }}
         >
           Start Game
-        </button>
-
-        <button
-          className="login-button"
-          onClick={() => navigate('/register')}
-          style={{
-            backgroundColor: 'black',
-            color: 'white',
-            padding: '10px',
-            marginTop: '30px',
-            borderRadius: '5px',
-            cursor: 'pointer',
-          }}
-        >
-          Register
-        </button>
-      </div>
-    </div>
+        </Button>
+      </DialogContent>
+    </Dialog>
   );
 };
 

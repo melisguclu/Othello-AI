@@ -14,15 +14,93 @@ import {
   makeMove,
   isGameOver,
 } from '../utils/boardUtils';
+import { toast } from 'react-hot-toast';
 
+// const initialBoard = () => {
+//   const board = Array(8)
+//     .fill(null)
+//     .map(() => Array(8).fill(null));
+//   board[3][3] = 'W';
+//   board[3][4] = 'B';
+//   board[4][3] = 'B';
+//   board[4][4] = 'W';
+//   return board;
+// };
+
+//for fast test
 const initialBoard = () => {
   const board = Array(8)
     .fill(null)
     .map(() => Array(8).fill(null));
-  board[3][3] = 'W';
-  board[3][4] = 'B';
-  board[4][3] = 'B';
-  board[4][4] = 'W';
+
+  board[0][0] = 'W';
+  board[0][1] = 'W';
+  board[0][2] = 'W';
+  board[0][3] = 'W';
+  board[0][4] = 'W';
+  board[0][5] = 'B';
+  board[0][6] = 'B';
+  board[0][7] = 'B';
+
+  board[1][0] = 'W';
+  board[1][1] = 'W';
+  board[1][2] = 'W';
+  board[1][3] = 'W';
+  board[1][4] = 'W';
+  board[1][5] = 'B';
+  board[1][6] = 'B';
+  board[1][7] = 'B';
+
+  board[2][0] = 'W';
+  board[2][1] = 'W';
+  board[2][2] = 'W';
+  board[2][4] = 'W';
+  board[2][5] = 'B';
+  board[2][6] = 'B';
+  board[2][7] = 'B';
+
+  board[3][0] = 'W';
+  board[3][1] = 'W';
+  board[3][3] = 'B';
+  board[3][4] = 'W';
+  board[3][5] = 'B';
+  board[3][6] = 'B';
+  board[3][7] = 'B';
+
+  board[4][0] = 'W';
+  board[4][1] = 'W';
+  board[4][2] = 'W';
+  board[4][3] = 'W';
+  board[4][4] = 'B';
+  board[4][6] = 'B';
+  board[4][7] = 'B';
+
+  board[5][0] = 'B';
+  board[5][1] = 'B';
+  board[5][2] = 'B';
+  board[5][3] = 'B';
+  board[5][5] = 'B';
+  board[5][6] = 'B';
+  board[5][7] = 'B';
+
+  board[6][0] = 'B';
+  board[6][1] = 'B';
+  board[6][2] = 'B';
+  board[6][3] = 'B';
+  board[6][4] = 'B';
+  board[6][5] = 'B';
+  board[6][6] = 'W';
+  board[6][7] = 'W';
+
+  board[7][0] = 'B';
+  board[7][1] = 'B';
+  board[7][2] = 'B';
+  board[7][3] = 'B';
+  board[7][4] = 'B';
+  board[7][5] = 'B';
+  board[7][6] = 'B';
+  board[7][7] = 'W';
+
   return board;
 };
 
@@ -33,10 +111,12 @@ const Game = () => {
   const [validMoves, setValidMoves] = useState([]);
   const [playType, setPlayType] = useState('');
   const [showModal, setShowModal] = useState(true);
+  const [gameOverModalOpen, setGameOverModalOpen] = useState(false);
   const [latestDisc, setLatestDisc] = useState(null);
   const [aiType, setAiType] = useState('');
   const [gameOver, setGameOver] = useState(false);
   const [winner, setWinner] = useState(null);
+  const [gameStarted, setGameStarted] = useState(false);
 
   useEffect(() => {
     setValidMoves(getValidMoves(board, currentPlayer));
@@ -46,6 +126,17 @@ const Game = () => {
     (row, col) => {
       if (playType === 'human-vs-ai' && currentPlayer === 'W') {
         return; //if it's AI's turn, dont let human player make a move
+      }
+
+      if (!gameStarted) {
+        toast.error(
+          'The game has not started yet! Please click the start game button'
+        );
+        return;
+      }
+      if (!isValidMove(board, row, col, currentPlayer)) {
+        toast.error('Invalid move! Please select a valid move (grey cells)');
+        return;
       }
 
       if (isValidMove(board, row, col, currentPlayer)) {
@@ -102,6 +193,7 @@ const Game = () => {
                   : null;
             setWinner(winner);
             setGameOver(true);
+            setGameOverModalOpen(true);
           } else {
             setCurrentPlayer('B'); // move to human player after AI
           }
@@ -127,6 +219,7 @@ const Game = () => {
       setAiType(aiType);
     }
     setShowModal(false);
+    setGameStarted(true);
   };
 
   const handleRestart = () => {
@@ -137,6 +230,12 @@ const Game = () => {
     setWinner(null);
     setShowModal(true);
     setLatestDisc(null);
+    setGameStarted(false);
+  };
+  const handleGameOver = () => {};
+
+  const handleCloseGameOverModal = () => {
+    setGameOverModalOpen(false);
   };
 
   return (
@@ -144,20 +243,21 @@ const Game = () => {
       {showModal && (
         <Modal
           onClose={() => setShowModal(false)}
-          onSelect={({ playType, aiType }) => {
-            setPlayType(playType);
-            setAiType(aiType);
-          }}
+          onSelect={handleModalSelect}
         />
       )}
       {gameOver && (
         <GameOverModal
+          open={gameOverModalOpen}
+          onClose={handleCloseGameOverModal}
           winner={winner}
           score={score}
           onRestart={handleRestart}
         />
       )}
-      <ScoreBoard score={score} playType={playType} aiType={aiType} />
+      {gameStarted && (
+        <ScoreBoard score={score} playType={playType} aiType={aiType} />
+      )}
       <Board
         board={board}
         onCellClick={handleCellClick}

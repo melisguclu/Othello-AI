@@ -3,14 +3,16 @@ import styled from 'styled-components';
 
 const ScoreBoard = ({ score, playType, aiType }) => {
   return (
-    <ScoreBoardContainer>
-      <ScoreHeading>Play Type: {playType}</ScoreHeading>
-      {playType === 'human-vs-ai' && (
-        <ScoreHeading>AI Type: {aiType}</ScoreHeading>
-      )}
-      <ScoreHeading>Black: {score.B}</ScoreHeading>
-      <ScoreHeading>White: {score.W}</ScoreHeading>
-    </ScoreBoardContainer>
+    <>
+      <ScoreBoardContainer>
+        <ScoreHeading>Play Type: {playType}</ScoreHeading>
+        {playType === 'human-vs-ai' && (
+          <ScoreHeading>AI Type: {aiType}</ScoreHeading>
+        )}
+        <ScoreHeading>Black: {score.B}</ScoreHeading>
+        <ScoreHeading>White: {score.W}</ScoreHeading>
+      </ScoreBoardContainer>
+    </>
   );
 };
 
