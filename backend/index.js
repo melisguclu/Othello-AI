@@ -2,8 +2,10 @@ const express = require('express');
 const dotenv = require('dotenv').config();
 const cors = require('cors');
 const mongoose = require('mongoose');
-const authRoutes = require('./routes/authRoutes'); // Import authRoutes
+const authRoutes = require('./routes/authRoutes'); 
 const cookieParser = require('cookie-parser');
+const gameRoutes = require('./routes/gameRoutes');
+
 
 const app = express();
 
@@ -17,9 +19,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
-
 app.use('/auth', authRoutes);
-
+app.use('/games', gameRoutes);
 
 const port = 8000
 app.listen(port, () => {

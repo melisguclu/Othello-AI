@@ -3,6 +3,7 @@ import Board from './Board';
 import ScoreBoard from './ScoreBoard';
 import Modal from './Modal';
 import GameOverModal from './GameOverModal';
+import axios from 'axios';
 
 import { makeMinimaxMove } from '../ai-players/MinimaxAI';
 import { makeMCTSMove } from '../ai-players/MCTS';
@@ -15,6 +16,8 @@ import {
   isGameOver,
 } from '../utils/boardUtils';
 import { toast } from 'react-hot-toast';
+import { useContext } from 'react';
+import { UserContext } from '../../context/userContext';
 
 // const initialBoard = () => {
 //   const board = Array(8)
@@ -117,6 +120,49 @@ const Game = () => {
   const [gameOver, setGameOver] = useState(false);
   const [winner, setWinner] = useState(null);
   const [gameStarted, setGameStarted] = useState(false);
+  const { user } = useContext(UserContext);
+
+  // if (!user) {
+  //   console.error('User is not defined. Please ensure the user is logged in.');
+  // }
+  // if (user) {
+  //   console.log('User is defined:', user);
+  //   console.log('User ID:', user.id);
+  // }
+  // Kullanıcı değiştiğinde gerekli işlemleri yap
+  useEffect(() => {
+    if (user) {
+      console.log('User logged in:', user);
+    } else {
+      console.log('User logged out or not defined.');
+    }
+  }, [user]);
+
+  const checkGameOver = (newBoard) => {
+    if (isGameOver(newBoard)) {
+      const winner =
+        score.B > score.W ? 'win' : score.B < score.W ? 'loss' : 'draw';
+
+      if (user) {
+        const gameData = {
+          userId: user._id, // Giriş yapmış kullanıcıyı al
+          mode: playType,
+          aiType: aiType || null,
+          result: winner,
+          score: { player: score.B, opponent: score.W },
+        };
+        saveGameToDatabase(gameData);
+      } else {
+        console.log('User is not logged in. Skipping game save.');
+      }
+
+      setWinner(winner);
+      setGameOver(true);
+      setGameOverModalOpen(true);
+      return true; // Oyun bitti
+    }
+    return false; // Oyun devam ediyor
+  };
 
   useEffect(() => {
     setValidMoves(getValidMoves(board, currentPlayer));
@@ -146,12 +192,7 @@ const Game = () => {
         updateScore(newBoard);
         setBoard(newBoard);
 
-        if (isGameOver(newBoard)) {
-          const winner =
-            score.B > score.W ? 'Black' : score.B < score.W ? 'White' : null;
-          setWinner(winner);
-          setGameOver(true);
-        } else {
+        if (!checkGameOver(newBoard)) {
           setCurrentPlayer(currentPlayer === 'B' ? 'W' : 'B');
         }
       }
@@ -180,22 +221,12 @@ const Game = () => {
         setTimeout(() => {
           const newBoard = copyBoard(board);
           makeMove(newBoard, row, col, currentPlayer);
-          setLatestDisc({ row, col }); // save the position of the disc that was played
+          setLatestDisc({ row, col });
           updateScore(newBoard);
           setBoard(newBoard);
 
-          if (isGameOver(newBoard)) {
-            const winner =
-              score.B > score.W
-                ? 'Siyah (B)'
-                : score.B < score.W
-                  ? 'Beyaz (W)'
-                  : null;
-            setWinner(winner);
-            setGameOver(true);
-            setGameOverModalOpen(true);
-          } else {
-            setCurrentPlayer('B'); // move to human player after AI
+          if (!checkGameOver(newBoard)) {
+            setCurrentPlayer('B');
           }
         }, 1000);
       }
@@ -232,10 +263,24 @@ const Game = () => {
     setLatestDisc(null);
     setGameStarted(false);
   };
-  const handleGameOver = () => {};
 
   const handleCloseGameOverModal = () => {
     setGameOverModalOpen(false);
+  };
+
+  const saveGameToDatabase = async (gameData) => {
+    try {
+      console.log('Sending game data:', gameData);
+      const response = await axios.post('/games/save', gameData, {
+        withCredentials: true,
+      });
+      console.log('Game saved successfully:', response.data);
+    } catch (error) {
+      console.error(
+        'Error saving game:',
+        error.response?.data || error.message
+      );
+    }
   };
 
   return (
