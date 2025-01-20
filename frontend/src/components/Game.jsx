@@ -19,6 +19,8 @@ import { toast } from 'react-hot-toast';
 import { useContext } from 'react';
 import { UserContext } from '../../context/userContext';
 
+//TODO: issue when there no valid move
+
 // const initialBoard = () => {
 //   const board = Array(8)
 //     .fill(null)
@@ -86,22 +88,22 @@ const initialBoard = () => {
   board[5][6] = 'B';
   board[5][7] = 'B';
 
-  board[6][0] = 'B';
-  board[6][1] = 'B';
-  board[6][2] = 'B';
-  board[6][3] = 'B';
-  board[6][4] = 'B';
-  board[6][5] = 'B';
+  board[6][0] = 'W';
+  board[6][1] = 'W';
+  board[6][2] = 'W';
+  board[6][3] = 'W';
+  board[6][4] = 'W';
+  board[6][5] = 'W';
   board[6][6] = 'W';
   board[6][7] = 'W';
 
-  board[7][0] = 'B';
-  board[7][1] = 'B';
-  board[7][2] = 'B';
-  board[7][3] = 'B';
-  board[7][4] = 'B';
-  board[7][5] = 'B';
-  board[7][6] = 'B';
+  board[7][0] = 'W';
+  board[7][1] = 'W';
+  board[7][2] = 'W';
+  board[7][3] = 'W';
+  board[7][4] = 'W';
+  board[7][5] = 'W';
+  board[7][6] = 'W';
   board[7][7] = 'W';
 
   return board;
@@ -122,14 +124,6 @@ const Game = () => {
   const [gameStarted, setGameStarted] = useState(false);
   const { user } = useContext(UserContext);
 
-  // if (!user) {
-  //   console.error('User is not defined. Please ensure the user is logged in.');
-  // }
-  // if (user) {
-  //   console.log('User is defined:', user);
-  //   console.log('User ID:', user.id);
-  // }
-  // Kullanıcı değiştiğinde gerekli işlemleri yap
   useEffect(() => {
     if (user) {
       console.log('User logged in:', user);
@@ -145,7 +139,7 @@ const Game = () => {
 
       if (user) {
         const gameData = {
-          userId: user._id, // Giriş yapmış kullanıcıyı al
+          userId: user.id,
           mode: playType,
           aiType: aiType || null,
           result: winner,
@@ -159,9 +153,9 @@ const Game = () => {
       setWinner(winner);
       setGameOver(true);
       setGameOverModalOpen(true);
-      return true; // Oyun bitti
+      return true; //game over
     }
-    return false; // Oyun devam ediyor
+    return false; //game continues
   };
 
   useEffect(() => {
@@ -201,6 +195,14 @@ const Game = () => {
   );
 
   useEffect(() => {
+    if (playType === 'human-vs-ai' && currentPlayer === 'B') {
+      if (validMoves.length === 0) {
+        console.log('B has no valid moves');
+        setCurrentPlayer('B'); //if AI has no valid moves, skip its turn
+        return;
+      }
+    }
+
     if (playType === 'human-vs-ai' && currentPlayer === 'W') {
       if (validMoves.length === 0) {
         setCurrentPlayer('B'); //if AI has no valid moves, skip its turn
