@@ -22,13 +22,27 @@ import {
 } from 'recharts';
 
 export default function Profile() {
+  const { user, setUser } = useContext(UserContext);
+  const navigate = useNavigate();
+  const [recentGames, setRecentGames] = useState([]);
+  const [loadingUser, setLoadingUser] = useState(true);
+  const [loadingGames, setLoadingGames] = useState(true);
+  const [loadingStats, setLoadingStats] = useState(true);
+
   // Mock data
-  const personalStats = {
-    totalGames: 50,
-    wins: 30,
-    losses: 20,
-    winRate: '60%',
-  };
+  // const personalStats = {
+  //   totalGames: 50,
+  //   wins: 30,
+  //   losses: 20,
+  //   winRate: '60%',
+  // };
+
+  const [personalStats, setPersonalStats] = useState({
+    totalGames: 0,
+    wins: 0,
+    losses: 0,
+    winRate: '0.00%',
+  });
 
   const userLevel = {
     level: 5,
@@ -40,12 +54,6 @@ export default function Profile() {
     { month: 'February', played: 15, won: 9 },
     { month: 'March', played: 8, won: 5 },
   ];
-
-  const { user, setUser } = useContext(UserContext);
-  const navigate = useNavigate();
-  const [recentGames, setRecentGames] = useState([]);
-  const [loadingUser, setLoadingUser] = useState(true);
-  const [loadingGames, setLoadingGames] = useState(true);
 
   const handleLogout = async () => {
     try {
@@ -89,6 +97,21 @@ export default function Profile() {
       }
     };
 
+    const fetchStatistics = async () => {
+      if (!user) return;
+
+      try {
+        setLoadingStats(true);
+        const response = await axios.get(`/games/statistics/${user.id}`);
+        setPersonalStats(response.data);
+      } catch (error) {
+        console.error('Error fetching statistics:', error);
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+
+    fetchStatistics();
     fetchUserData();
     fetchRecentGames();
   }, [user]);
@@ -162,10 +185,16 @@ export default function Profile() {
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center">
-          <p>Total Games: {personalStats.totalGames}</p>
-          <p>Wins: {personalStats.wins}</p>
-          <p>Losses: {personalStats.losses}</p>
-          <p>Win Rate: {personalStats.winRate}</p>
+          {loadingStats ? (
+            <p>Loading statistics...</p>
+          ) : (
+            <>
+              <p>Total Games: {personalStats.totalGames}</p>
+              <p>Wins: {personalStats.wins}</p>
+              <p>Losses: {personalStats.losses}</p>
+              <p>Win Rate: {personalStats.winRate}%</p>
+            </>
+          )}
         </CardContent>
       </Card>
 
