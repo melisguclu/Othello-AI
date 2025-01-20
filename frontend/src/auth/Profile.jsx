@@ -28,6 +28,8 @@ export default function Profile() {
   const [loadingUser, setLoadingUser] = useState(true);
   const [loadingGames, setLoadingGames] = useState(true);
   const [loadingStats, setLoadingStats] = useState(true);
+  const [chartData, setChartData] = useState([]);
+  const [loadingChart, setLoadingChart] = useState(true);
 
   // Mock data
   // const personalStats = {
@@ -49,11 +51,11 @@ export default function Profile() {
     progress: 70, // percentage
   };
 
-  const chartData = [
-    { month: 'January', played: 10, won: 6 },
-    { month: 'February', played: 15, won: 9 },
-    { month: 'March', played: 8, won: 5 },
-  ];
+  // const chartData = [
+  //   { month: 'January', played: 10, won: 6 },
+  //   { month: 'February', played: 15, won: 9 },
+  //   { month: 'March', played: 8, won: 5 },
+  // ];
 
   const handleLogout = async () => {
     try {
@@ -87,6 +89,7 @@ export default function Profile() {
       try {
         setLoadingGames(true);
         const response = await axios.get(`/games/user/${user.id}`);
+        console.log('Recent games:', response.data.games);
         // Son 5 oyunu al
         const limitedGames = response.data.games.slice(0, 5);
         setRecentGames(limitedGames);
@@ -111,6 +114,23 @@ export default function Profile() {
       }
     };
 
+    const fetchMonthlyStatistics = async () => {
+      if (!user) return;
+
+      try {
+        setLoadingChart(true);
+        const response = await axios.get(
+          `/games/statistics/monthly/${user.id}`
+        );
+        setChartData(response.data.statistics);
+      } catch (error) {
+        console.error('Error fetching monthly statistics:', error);
+      } finally {
+        setLoadingChart(false);
+      }
+    };
+
+    fetchMonthlyStatistics();
     fetchStatistics();
     fetchUserData();
     fetchRecentGames();
@@ -160,17 +180,25 @@ export default function Profile() {
           {loadingGames ? (
             <p>Loading recent games...</p>
           ) : recentGames.length > 0 ? (
-            <ul className="space-y-2">
+            <div className="divide-y divide-gray-300">
               {recentGames.map((game) => (
-                <li key={game._id} className="flex justify-between">
-                  <span>{game.mode}</span>
-                  <span>{game.result}</span>
-                  <span className="text-gray-500">
+                <div
+                  key={game._id}
+                  className="grid grid-cols-4 items-center py-2 text-center"
+                >
+                  <span className="font-medium text-start">{game.mode}</span>
+                  <span className="font-medium">{game.aiType}</span>
+                  <span
+                    className={`font-semibold ${game.result === 'win' ? 'text-green-500' : 'text-red-500'}`}
+                  >
+                    {game.result}
+                  </span>
+                  <span className="text-gray-500 text-sm text-end">
                     {new Date(game.date).toLocaleDateString()}
                   </span>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           ) : (
             <p className="text-sm text-gray-600">No recent games found.</p>
           )}
@@ -206,20 +234,24 @@ export default function Profile() {
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center">
-          <BarChart
-            width={300}
-            height={250}
-            data={chartData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="played" fill="#2563eb" />
-            <Bar dataKey="won" fill="#16a34a" />
-          </BarChart>
+          {loadingChart ? (
+            <p>Loading game statistics...</p>
+          ) : (
+            <BarChart
+              width={300}
+              height={250}
+              data={chartData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="played" fill="#2563eb" />
+              <Bar dataKey="won" fill="#16a34a" />
+            </BarChart>
+          )}
         </CardContent>
       </Card>
 
