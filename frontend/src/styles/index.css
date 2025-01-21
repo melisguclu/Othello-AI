@@ -80,7 +80,7 @@ body {
   position: relative;
   width: 12.5%; /* Her hücre tahtanın %12.5'ine denk gelir (8x8 için) */
   aspect-ratio: 1; /* Hücreyi kare yapar */
-  border: 1px solid #000; /* Hücre kenarlıkları */
+  border: 0.5px solid #000; /* Hücre kenarlıkları */
   display: flex;
   justify-content: center;
   align-items: center;
