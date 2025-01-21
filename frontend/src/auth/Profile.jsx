@@ -31,14 +31,6 @@ export default function Profile() {
   const [chartData, setChartData] = useState([]);
   const [loadingChart, setLoadingChart] = useState(true);
 
-  // Mock data
-  // const personalStats = {
-  //   totalGames: 50,
-  //   wins: 30,
-  //   losses: 20,
-  //   winRate: '60%',
-  // };
-
   const [personalStats, setPersonalStats] = useState({
     totalGames: 0,
     wins: 0,
@@ -50,12 +42,6 @@ export default function Profile() {
     level: 5,
     progress: 70, // percentage
   };
-
-  // const chartData = [
-  //   { month: 'January', played: 10, won: 6 },
-  //   { month: 'February', played: 15, won: 9 },
-  //   { month: 'March', played: 8, won: 5 },
-  // ];
 
   const handleLogout = async () => {
     try {
@@ -137,9 +123,9 @@ export default function Profile() {
   }, [user]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6 bg-gray-100">
+    <div className="grid grid-cols-1 gap-8 p-4 sm:p-6 md:grid-cols-2 lg:grid-cols-3 bg-gray-100">
       {/* User Information Card */}
-      <Card className="col-span-1 md:col-span-2 lg:col-span-1 shadow-lg">
+      <Card className="col-span-1 shadow-lg">
         <CardHeader>
           <CardTitle className="text-center text-xl font-bold">
             Profile
@@ -170,7 +156,7 @@ export default function Profile() {
       </Card>
 
       {/* Recent Games Card */}
-      <Card className="shadow-lg col-span-2">
+      <Card className="col-span-1 shadow-lg md:col-span-2">
         <CardHeader>
           <CardTitle className="text-center text-xl font-bold">
             Recent Games
@@ -189,7 +175,9 @@ export default function Profile() {
                   <span className="font-medium text-start">{game.mode}</span>
                   <span className="font-medium">{game.aiType}</span>
                   <span
-                    className={`font-semibold ${game.result === 'win' ? 'text-green-500' : 'text-red-500'}`}
+                    className={`font-semibold ${
+                      game.result === 'win' ? 'text-green-500' : 'text-red-500'
+                    }`}
                   >
                     {game.result}
                   </span>
@@ -206,7 +194,7 @@ export default function Profile() {
       </Card>
 
       {/* Personal Statistics Card */}
-      <Card className="shadow-lg">
+      <Card className="col-span-1 shadow-lg">
         <CardHeader>
           <CardTitle className="text-center text-xl font-bold">
             Personal Statistics
@@ -227,21 +215,20 @@ export default function Profile() {
       </Card>
 
       {/* Game Statistics Chart Card */}
-      <Card className="shadow-lg">
+      <Card className="col-span-1 shadow-lg">
         <CardHeader>
           <CardTitle className="text-center text-xl font-bold">
             Game Statistics
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-center">
+        <CardContent className="flex flex-col justify-center items-center">
           {loadingChart ? (
             <p>Loading game statistics...</p>
           ) : (
             <BarChart
-              width={300}
+              width={window.innerWidth < 768 ? 200 : 300}
               height={250}
               data={chartData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
@@ -256,7 +243,7 @@ export default function Profile() {
       </Card>
 
       {/* User Level Card */}
-      <Card className="shadow-lg">
+      <Card className="col-span-1 shadow-lg">
         <CardHeader>
           <CardTitle className="text-center text-xl font-bold">
             User Level
