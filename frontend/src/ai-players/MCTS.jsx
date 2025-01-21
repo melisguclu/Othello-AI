@@ -4,6 +4,7 @@ import {
   makeMove,
   evaluateBoard,
   isGameOver,
+  isValidMove,
 } from '../utils/boardUtils';
 
 class Node {
@@ -50,13 +51,19 @@ const selection = (node, currentPlayer) => {
 
 const expansion = (node, currentPlayer) => {
   const validMoves = getValidMoves(node.state, currentPlayer);
+
   validMoves.forEach(([row, col]) => {
-    const newState = copyBoard(node.state);
-    makeMove(newState, row, col, currentPlayer);
-    const childNode = new Node(newState, node);
-    node.children.push(childNode);
+    if (
+      !node.children.some((child) => child.state[row][col] === currentPlayer)
+    ) {
+      const newState = copyBoard(node.state);
+      makeMove(newState, row, col, currentPlayer);
+      const childNode = new Node(newState, node, currentPlayer);
+      node.children.push(childNode);
+    }
   });
-  return node.children[0]; // returns the first child that was added
+
+  return node.children[0];
 };
 
 const simulation = (state, player) => {
@@ -65,10 +72,22 @@ const simulation = (state, player) => {
 
   while (!isGameOver(simulatedState)) {
     const validMoves = getValidMoves(simulatedState, currentSimPlayer);
-    if (validMoves.length === 0) break;
+    if (validMoves.length === 0) {
+      currentSimPlayer = currentSimPlayer === 'B' ? 'W' : 'B';
+      continue;
+    }
     const randomMove =
       validMoves[Math.floor(Math.random() * validMoves.length)];
-    makeMove(simulatedState, randomMove[0], randomMove[1], currentSimPlayer);
+    if (
+      isValidMove(
+        simulatedState,
+        randomMove[0],
+        randomMove[1],
+        currentSimPlayer
+      )
+    ) {
+      makeMove(simulatedState, randomMove[0], randomMove[1], currentSimPlayer);
+    }
     currentSimPlayer = currentSimPlayer === 'B' ? 'W' : 'B';
   }
 
@@ -100,12 +119,16 @@ export const makeMCTSMove = (board, currentPlayer, iterations = 1000) => {
 };
 
 const getMoveFromStateDifference = (oldState, newState) => {
+  let difference = null;
   for (let row = 0; row < oldState.length; row++) {
     for (let col = 0; col < oldState[row].length; col++) {
       if (oldState[row][col] !== newState[row][col]) {
-        return [row, col];
+        // If a piece was added to the board
+        if (oldState[row][col] === null && newState[row][col] !== null) {
+          difference = [row, col];
+        }
       }
     }
   }
-  return null;
+  return difference;
 };
