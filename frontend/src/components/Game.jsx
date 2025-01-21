@@ -3,6 +3,7 @@ import Board from './Board';
 import ScoreBoard from './ScoreBoard';
 import Modal from './Modal';
 import GameOverModal from './GameOverModal';
+import { Button } from '@/components/ui/button';
 import axios from 'axios';
 
 import { makeMinimaxMove } from '../ai-players/MinimaxAI';
@@ -19,95 +20,96 @@ import { toast } from 'react-hot-toast';
 import { useContext } from 'react';
 import { UserContext } from '../../context/userContext';
 
-//TODO: issue when there no valid move
-
-// const initialBoard = () => {
-//   const board = Array(8)
-//     .fill(null)
-//     .map(() => Array(8).fill(null));
-//   board[3][3] = 'W';
-//   board[3][4] = 'B';
-//   board[4][3] = 'B';
-//   board[4][4] = 'W';
-//   return board;
-// };
-
-//for fast test
 const initialBoard = () => {
   const board = Array(8)
     .fill(null)
     .map(() => Array(8).fill(null));
-
-  board[0][0] = 'W';
-  board[0][1] = 'W';
-  board[0][2] = 'W';
-  board[0][3] = 'W';
-  board[0][4] = 'W';
-  board[0][5] = 'B';
-  board[0][6] = 'B';
-  board[0][7] = 'B';
-
-  board[1][0] = 'W';
-  board[1][1] = 'W';
-  board[1][2] = 'W';
-  board[1][3] = 'W';
-  board[1][4] = 'W';
-  board[1][5] = 'B';
-  board[1][6] = 'B';
-  board[1][7] = 'B';
-
-  board[2][0] = 'W';
-  board[2][1] = 'W';
-  board[2][2] = 'W';
-  board[2][4] = 'W';
-  board[2][5] = 'B';
-  board[2][6] = 'B';
-  board[2][7] = 'B';
-
-  board[3][0] = 'W';
-  board[3][1] = 'W';
-  board[3][3] = 'B';
-  board[3][4] = 'W';
-  board[3][5] = 'B';
-  board[3][6] = 'B';
-  board[3][7] = 'B';
-
-  board[4][0] = 'W';
-  board[4][1] = 'W';
-  board[4][2] = 'W';
-  board[4][3] = 'W';
-  board[4][4] = 'B';
-  board[4][6] = 'B';
-  board[4][7] = 'B';
-
-  board[5][0] = 'B';
-  board[5][1] = 'B';
-  board[5][2] = 'B';
-  board[5][3] = 'B';
-  board[5][5] = 'B';
-  board[5][6] = 'B';
-  board[5][7] = 'B';
-
-  board[6][0] = 'W';
-  board[6][1] = 'W';
-  board[6][2] = 'W';
-  board[6][3] = 'W';
-  board[6][4] = 'W';
-  board[6][5] = 'W';
-  board[6][6] = 'W';
-  board[6][7] = 'W';
-
-  board[7][0] = 'W';
-  board[7][1] = 'W';
-  board[7][2] = 'W';
-  board[7][3] = 'W';
-  board[7][4] = 'W';
-  board[7][5] = 'W';
-  board[7][6] = 'W';
-  board[7][7] = 'W';
-
+  board[3][3] = 'W';
+  board[3][4] = 'B';
+  board[4][3] = 'B';
+  board[4][4] = 'W';
   return board;
 };
+
+//initial board to test no valid moves
+// const initialBoard = () => {
+//   const board = Array(8)
+//     .fill(null)
+//     .map(() => Array(8).fill(null));
+
+//   board[0][0] = 'B';
+//   board[0][1] = 'B';
+//   board[0][2] = 'B';
+//   board[0][3] = 'B';
+//   board[0][4] = 'B';
+//   board[0][5] = 'B';
+//   board[0][6] = 'W';
+//   // board[0][7] = 'B';
+
+//   board[1][0] = 'B';
+//   board[1][1] = 'B';
+//   board[1][2] = 'W';
+//   board[1][3] = 'W';
+//   board[1][4] = 'W';
+//   // board[1][5] = 'B';
+//   // board[1][6] = 'B';
+//   // board[1][7] = 'B';
+
+//   board[2][0] = 'B';
+//   board[2][1] = 'B';
+//   board[2][2] = 'W';
+//   board[2][3] = 'W';
+//   board[2][4] = 'W';
+//   // board[2][5] = 'W';
+//   board[2][6] = 'W';
+//   board[2][7] = 'B';
+
+//   board[3][0] = 'B';
+//   board[3][1] = 'B';
+//   board[3][2] = 'B';
+//   board[3][3] = 'B';
+//   board[3][4] = 'B';
+//   board[3][5] = 'W';
+//   board[3][6] = 'W';
+//   board[3][7] = 'B';
+
+//   board[4][0] = 'B';
+//   board[4][1] = 'B';
+//   board[4][2] = 'W';
+//   board[4][3] = 'B';
+//   board[4][4] = 'W';
+//   board[4][5] = 'W';
+//   board[4][6] = 'W';
+//   board[4][7] = 'B';
+
+//   board[5][0] = 'B';
+//   board[5][1] = 'B';
+//   board[5][2] = 'B';
+//   board[5][3] = 'W';
+//   board[5][5] = 'W';
+//   // board[5][6] = 'B';
+//   board[5][7] = 'B';
+
+//   board[6][0] = 'B';
+//   // board[6][1] = 'W';
+//   board[6][2] = 'B';
+//   board[6][3] = 'B';
+//   board[6][4] = 'B';
+//   board[6][5] = 'B';
+//   board[6][6] = 'B';
+//   board[6][7] = 'B';
+
+//   board[7][0] = 'B';
+//   board[7][1] = 'B';
+//   board[7][2] = 'B';
+//   board[7][3] = 'B';
+//   // board[7][4] = 'W';
+//   board[7][5] = 'W';
+//   // board[7][6] = 'W';
+//   board[7][7] = 'B';
+
+//   return board;
+// };
 
 const Game = () => {
   const [board, setBoard] = useState(initialBoard());
@@ -133,7 +135,10 @@ const Game = () => {
   }, [user]);
 
   const checkGameOver = (newBoard) => {
-    if (isGameOver(newBoard)) {
+    const blackValidMoves = getValidMoves(newBoard, 'B').length > 0;
+    const whiteValidMoves = getValidMoves(newBoard, 'W').length > 0;
+
+    if (!blackValidMoves && !whiteValidMoves) {
       const winner =
         score.B > score.W ? 'win' : score.B < score.W ? 'loss' : 'draw';
 
@@ -146,16 +151,15 @@ const Game = () => {
           score: { player: score.B, opponent: score.W },
         };
         saveGameToDatabase(gameData);
-      } else {
-        console.log('User is not logged in. Skipping game save.');
       }
 
       setWinner(winner);
       setGameOver(true);
       setGameOverModalOpen(true);
-      return true; //game over
+      return true;
     }
-    return false; //game continues
+
+    return false;
   };
 
   useEffect(() => {
@@ -195,23 +199,38 @@ const Game = () => {
   );
 
   useEffect(() => {
-    if (playType === 'human-vs-ai' && currentPlayer === 'B') {
-      if (validMoves.length === 0) {
-        console.log('B has no valid moves');
-        setCurrentPlayer('B'); //if AI has no valid moves, skip its turn
-        return;
+    if (!gameStarted) return;
+
+    const blackValidMoves = getValidMoves(board, 'B');
+    const whiteValidMoves = getValidMoves(board, 'W');
+
+    if (blackValidMoves.length === 0 && whiteValidMoves.length === 0) {
+      if (!gameOver) {
+        console.log('Both players have no valid moves. Game Over.');
+        checkGameOver(board);
       }
+      return;
+    }
+
+    //if no valid moves for current player skip turn
+    if (currentPlayer === 'B' && blackValidMoves.length === 0) {
+      console.log('B has no valid moves');
+      toast.error('Black has no valid moves. Skipping turn.');
+      setCurrentPlayer('W');
+      return;
+    }
+
+    if (currentPlayer === 'W' && whiteValidMoves.length === 0) {
+      console.log('W has no valid moves');
+      toast.error('White has no valid moves. Skipping turn.');
+      setCurrentPlayer('B');
+      return;
     }
 
     if (playType === 'human-vs-ai' && currentPlayer === 'W') {
-      if (validMoves.length === 0) {
-        setCurrentPlayer('B'); //if AI has no valid moves, skip its turn
-        return;
-      }
-
       let move;
       if (aiType === 'random') {
-        move = makeRandomMove(validMoves);
+        move = makeRandomMove(whiteValidMoves);
       } else if (aiType === 'minimax') {
         move = makeMinimaxMove(board, currentPlayer);
       } else if (aiType === 'mcts') {
@@ -233,7 +252,7 @@ const Game = () => {
         }, 1000);
       }
     }
-  }, [currentPlayer, playType, aiType, validMoves, board, score]);
+  }, [currentPlayer, playType, aiType, board, gameStarted, gameOver]);
 
   const updateScore = (newBoard) => {
     const newScore = { B: 0, W: 0 };
@@ -264,6 +283,8 @@ const Game = () => {
     setShowModal(true);
     setLatestDisc(null);
     setGameStarted(false);
+    setPlayType('');
+    setAiType('');
   };
 
   const handleCloseGameOverModal = () => {
@@ -303,7 +324,14 @@ const Game = () => {
         />
       )}
       {gameStarted && (
-        <ScoreBoard score={score} playType={playType} aiType={aiType} />
+        <>
+          <div className="flex justify-center items-center gap-5">
+            <ScoreBoard score={score} playType={playType} aiType={aiType} />
+            <Button onClick={handleRestart} className="mt-4 mb-4">
+              <ion-icon name="refresh"></ion-icon>
+            </Button>
+          </div>
+        </>
       )}
       <Board
         board={board}
