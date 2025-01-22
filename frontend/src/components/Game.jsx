@@ -19,6 +19,7 @@ import {
 import { toast } from 'react-hot-toast';
 import { useContext } from 'react';
 import { UserContext } from '../../context/userContext';
+import { useSocket } from '../../context/SocketContext';
 
 const initialBoard = () => {
   const board = Array(8)
@@ -30,86 +31,6 @@ const initialBoard = () => {
   board[4][4] = 'W';
   return board;
 };
-
-//initial board to test no valid moves
-// const initialBoard = () => {
-//   const board = Array(8)
-//     .fill(null)
-//     .map(() => Array(8).fill(null));
-
-//   board[0][0] = 'B';
-//   board[0][1] = 'B';
-//   board[0][2] = 'B';
-//   board[0][3] = 'B';
-//   board[0][4] = 'B';
-//   board[0][5] = 'B';
-//   board[0][6] = 'W';
-//   // board[0][7] = 'B';
-
-//   board[1][0] = 'B';
-//   board[1][1] = 'B';
-//   board[1][2] = 'W';
-//   board[1][3] = 'W';
-//   board[1][4] = 'W';
-//   // board[1][5] = 'B';
-//   // board[1][6] = 'B';
-//   // board[1][7] = 'B';
-
-//   board[2][0] = 'B';
-//   board[2][1] = 'B';
-//   board[2][2] = 'W';
-//   board[2][3] = 'W';
-//   board[2][4] = 'W';
-//   // board[2][5] = 'W';
-//   board[2][6] = 'W';
-//   board[2][7] = 'B';
-
-//   board[3][0] = 'B';
-//   board[3][1] = 'B';
-//   board[3][2] = 'B';
-//   board[3][3] = 'B';
-//   board[3][4] = 'B';
-//   board[3][5] = 'W';
-//   board[3][6] = 'W';
-//   board[3][7] = 'B';
-
-//   board[4][0] = 'B';
-//   board[4][1] = 'B';
-//   board[4][2] = 'W';
-//   board[4][3] = 'B';
-//   board[4][4] = 'W';
-//   board[4][5] = 'W';
-//   board[4][6] = 'W';
-//   board[4][7] = 'B';
-
-//   board[5][0] = 'B';
-//   board[5][1] = 'B';
-//   board[5][2] = 'B';
-//   board[5][3] = 'W';
-//   board[5][5] = 'W';
-//   // board[5][6] = 'B';
-//   board[5][7] = 'B';
-
-//   board[6][0] = 'B';
-//   // board[6][1] = 'W';
-//   board[6][2] = 'B';
-//   board[6][3] = 'B';
-//   board[6][4] = 'B';
-//   board[6][5] = 'B';
-//   board[6][6] = 'B';
-//   board[6][7] = 'B';
-
-//   board[7][0] = 'B';
-//   board[7][1] = 'B';
-//   board[7][2] = 'B';
-//   board[7][3] = 'B';
-//   // board[7][4] = 'W';
-//   board[7][5] = 'W';
-//   // board[7][6] = 'W';
-//   board[7][7] = 'B';
-
-//   return board;
-// };
 
 const Game = () => {
   const [board, setBoard] = useState(initialBoard());
@@ -125,6 +46,9 @@ const Game = () => {
   const [winner, setWinner] = useState(null);
   const [gameStarted, setGameStarted] = useState(false);
   const { user } = useContext(UserContext);
+  const socket = useSocket();
+  const [roomId, setRoomId] = useState('');
+  const [waitingForPlayer, setWaitingForPlayer] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -133,6 +57,34 @@ const Game = () => {
       console.log('User logged out or not defined.');
     }
   }, [user]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.emit('joinRoom', roomId);
+
+      socket.on('receiveMove', (move) => {
+        const { row, col, player } = move;
+        console.log('Move received:', move);
+        const newBoard = copyBoard(board);
+        makeMove(newBoard, row, col, player);
+        setBoard(newBoard);
+        setCurrentPlayer(player === 'B' ? 'W' : 'B');
+      });
+
+      //check if both players have joined the room
+      socket.on('playerJoined', (players) => {
+        if (players === 2) {
+          setWaitingForPlayer(false);
+          setGameStarted(true);
+        }
+      });
+
+      return () => {
+        socket.off('receiveMove');
+        socket.off('playerJoined');
+      };
+    }
+  }, [socket, board, roomId]);
 
   const checkGameOver = (newBoard) => {
     const blackValidMoves = getValidMoves(newBoard, 'B').length > 0;
@@ -189,6 +141,12 @@ const Game = () => {
         setLatestDisc({ row, col });
         updateScore(newBoard);
         setBoard(newBoard);
+
+        socket.emit('makeMove', {
+          //send move to opponent
+          roomId,
+          move: { row, col, player: currentPlayer },
+        });
 
         if (!checkGameOver(newBoard)) {
           setCurrentPlayer(currentPlayer === 'B' ? 'W' : 'B');
@@ -265,16 +223,35 @@ const Game = () => {
     setScore(newScore);
   };
 
-  const handleModalSelect = ({ playType, aiType }) => {
+  const handleModalSelect = ({ playType, aiType, roomId, action }) => {
     setPlayType(playType);
+    setRoomId(roomId);
+
+    if (playType === 'play-with-friend') {
+      if (action === 'create') {
+        socket.emit('createRoom', roomId);
+        setWaitingForPlayer(true);
+      } else if (action === 'join') {
+        socket.emit('joinRoom', roomId);
+        setWaitingForPlayer(true);
+      }
+    } else if (playType === 'human-vs-human') {
+      setWaitingForPlayer(false);
+      setGameStarted(true);
+    }
+
     if (playType === 'human-vs-ai') {
       setAiType(aiType);
     }
+
     setShowModal(false);
-    setGameStarted(true);
   };
 
   const handleRestart = () => {
+    if (socket && roomId) {
+      socket.emit('leaveRoom', roomId);
+    }
+
     setBoard(initialBoard());
     setScore({ B: 2, W: 2 });
     setCurrentPlayer('B');
@@ -313,6 +290,14 @@ const Game = () => {
           onClose={() => setShowModal(false)}
           onSelect={handleModalSelect}
         />
+      )}
+      {waitingForPlayer && playType === 'play-with-friend' && (
+        <div className="waiting-screen">
+          <h2>
+            Waiting for another player to join the room. Share this room ID with
+            your friend: <span>{roomId}</span>
+          </h2>
+        </div>
       )}
       {gameOver && (
         <GameOverModal

@@ -8,6 +8,7 @@ import Profile from './auth/Profile';
 import axios from 'axios';
 import { Toaster } from 'react-hot-toast';
 import { UserContextProvider } from '../context/userContext';
+import { SocketProvider } from '../context/SocketContext';
 
 axios.defaults.baseURL = 'http://localhost:8000';
 axios.defaults.withCredentials = true;
@@ -15,17 +16,19 @@ axios.defaults.withCredentials = true;
 function App() {
   return (
     <UserContextProvider>
-      <div className="App">
-        <Header />
-        {/* <Game /> */}
-        <Toaster position="bottom-right" toastOptions={{ duration: 2000 }} />
-        <Routes>
-          <Route path="/" element={<Game />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/profile" element={<Profile />} />
-        </Routes>
-      </div>
+      <SocketProvider>
+        <div className="App">
+          <Header />
+          <Toaster position="bottom-right" toastOptions={{ duration: 2000 }} />
+          <Routes>
+            <Route path="/" element={<Game />} />
+            <Route path="/register" element={<Register />} />
+
+            <Route path="/login" element={<Login />} />
+            <Route path="/profile" element={<Profile />} />
+          </Routes>
+        </div>
+      </SocketProvider>
     </UserContextProvider>
   );
 }
