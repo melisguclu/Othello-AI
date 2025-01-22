@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { nanoid } from 'nanoid'; // Import nanoid
 
 const Modal = ({ onClose, onSelect }) => {
   const [playType, setPlayType] = useState('human-vs-ai');
@@ -25,7 +26,7 @@ const Modal = ({ onClose, onSelect }) => {
   };
 
   const handleCreateRoom = () => {
-    const generatedRoomId = `room-${Math.random().toString(36).substr(2, 9)}`;
+    const generatedRoomId = `room-${nanoid(10)}`; // Use uuid to generate a unique room ID
     setRoomId(generatedRoomId);
     setAction('create');
   };
