@@ -60,31 +60,33 @@ const Game = () => {
 
   useEffect(() => {
     if (socket) {
-      socket.emit('joinRoom', roomId);
+      if (playType === 'play-with-friend') {
+        socket.emit('joinRoom', roomId);
 
-      socket.on('receiveMove', (move) => {
-        const { row, col, player } = move;
-        console.log('Move received:', move);
-        const newBoard = copyBoard(board);
-        makeMove(newBoard, row, col, player);
-        setBoard(newBoard);
-        setCurrentPlayer(player === 'B' ? 'W' : 'B');
-      });
+        socket.on('receiveMove', (move) => {
+          const { row, col, player } = move;
+          console.log('Move received:', move);
+          const newBoard = copyBoard(board);
+          makeMove(newBoard, row, col, player);
+          setBoard(newBoard);
+          setCurrentPlayer(player === 'B' ? 'W' : 'B');
+        });
 
-      //check if both players have joined the room
-      socket.on('playerJoined', (players) => {
-        if (players === 2) {
-          setWaitingForPlayer(false);
-          setGameStarted(true);
-        }
-      });
+        socket.on('playerJoined', (players) => {
+          if (players === 2) {
+            console.log('Both players have joined the room. Game starting...');
+            setWaitingForPlayer(false);
+            setGameStarted(true);
+          }
+        });
+      }
 
       return () => {
         socket.off('receiveMove');
         socket.off('playerJoined');
       };
     }
-  }, [socket, board, roomId]);
+  }, [socket, board, roomId, playType]);
 
   const checkGameOver = (newBoard) => {
     const blackValidMoves = getValidMoves(newBoard, 'B').length > 0;
@@ -142,18 +144,19 @@ const Game = () => {
         updateScore(newBoard);
         setBoard(newBoard);
 
-        socket.emit('makeMove', {
-          //send move to opponent
-          roomId,
-          move: { row, col, player: currentPlayer },
-        });
+        if (playType === 'play-with-friend') {
+          socket.emit('makeMove', {
+            roomId,
+            move: { row, col, player: currentPlayer },
+          });
+        }
 
         if (!checkGameOver(newBoard)) {
           setCurrentPlayer(currentPlayer === 'B' ? 'W' : 'B');
         }
       }
     },
-    [board, currentPlayer, playType, score]
+    [board, currentPlayer, playType, score, gameStarted]
   );
 
   useEffect(() => {
@@ -242,6 +245,7 @@ const Game = () => {
 
     if (playType === 'human-vs-ai') {
       setAiType(aiType);
+      setGameStarted(true);
     }
 
     setShowModal(false);
@@ -295,7 +299,7 @@ const Game = () => {
         <div className="waiting-screen">
           <h2>
             Waiting for another player to join the room. Share this room ID with
-            your friend: <span>{roomId}</span>
+            your friend: <strong>{roomId}</strong>
           </h2>
         </div>
       )}
