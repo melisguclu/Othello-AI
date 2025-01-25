@@ -75,9 +75,10 @@ const loginUser = async (req, res) => {
     // Send cookie with token
     return res
       .cookie('token', token, {
+        domain: process.env.COOKIE_DOMAIN,
         httpOnly: true, // Prevents access from client-side JavaScript
         secure: process.env.NODE_ENV === 'production', // Ensures HTTPS in production
-        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : undefined, // Prevents CSRF
+        // sameSite: process.env.NODE_ENV === 'production' ? 'strict' : undefined, // Prevents CSRF
       })
       .json({ message: 'Login successful', user });
   } catch (error) {
