@@ -19,7 +19,7 @@ import {
 import { toast } from 'react-hot-toast';
 import { useContext } from 'react';
 import { UserContext } from '../../context/userContext';
-import { useSocket } from '../../context/SocketContext';
+import { useSocket } from '../context/SocketContext';
 
 const initialBoard = () => {
   const board = Array(8)
