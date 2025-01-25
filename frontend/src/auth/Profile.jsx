@@ -19,12 +19,12 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
+import { api } from '../lib/api';
 
 export default function Profile() {
   const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
   const [recentGames, setRecentGames] = useState([]);
-  const [loadingUser, setLoadingUser] = useState(true);
   const [loadingGames, setLoadingGames] = useState(true);
   const [loadingStats, setLoadingStats] = useState(true);
   const [chartData, setChartData] = useState([]);
@@ -53,19 +53,6 @@ export default function Profile() {
   };
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        setLoadingUser(true);
-        if (user) {
-          console.log('User is logged in:', user);
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      } finally {
-        setLoadingUser(false);
-      }
-    };
-
     const fetchRecentGames = async () => {
       if (!user) {
         setLoadingGames(false);
@@ -115,7 +102,6 @@ export default function Profile() {
 
     fetchMonthlyStatistics();
     fetchStatistics();
-    fetchUserData();
     fetchRecentGames();
   }, [user]);
 
@@ -129,9 +115,7 @@ export default function Profile() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 text-center">
-          {loadingUser ? (
-            <p>Loading user information...</p>
-          ) : user ? (
+          {user ? (
             <div>
               <h2 className="text-lg font-semibold">Welcome, {user.name}!</h2>
               <p className="text-sm text-gray-600">Email: {user.email}</p>
