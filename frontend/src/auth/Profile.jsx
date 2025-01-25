@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-import axios from 'axios';
 import { UserContext } from '../context/userContext';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -45,7 +44,7 @@ export default function Profile() {
 
   const handleLogout = async () => {
     try {
-      await axios.post('/auth/logout');
+      await api.post('/auth/logout');
       setUser(null);
       navigate('/login');
     } catch (error) {
@@ -74,7 +73,7 @@ export default function Profile() {
       }
       try {
         setLoadingGames(true);
-        const response = await axios.get(`/games/user/${user.id}`);
+        const response = await api.get(`/games/user/${user.id}`);
         console.log('Recent games:', response.data.games);
         // Son 5 oyunu al
         const limitedGames = response.data.games.slice(0, 5);
@@ -91,7 +90,7 @@ export default function Profile() {
 
       try {
         setLoadingStats(true);
-        const response = await axios.get(`/games/statistics/${user.id}`);
+        const response = await api.get(`/games/statistics/${user.id}`);
         setPersonalStats(response.data);
       } catch (error) {
         console.error('Error fetching statistics:', error);
@@ -105,9 +104,7 @@ export default function Profile() {
 
       try {
         setLoadingChart(true);
-        const response = await axios.get(
-          `/games/statistics/monthly/${user.id}`
-        );
+        const response = await api.get(`/games/statistics/monthly/${user.id}`);
         setChartData(response.data.statistics);
       } catch (error) {
         console.error('Error fetching monthly statistics:', error);

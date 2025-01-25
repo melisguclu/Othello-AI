@@ -4,7 +4,6 @@ import ScoreBoard from './ScoreBoard';
 import Modal from './Modal';
 import GameOverModal from './GameOverModal';
 import { Button } from '@/components/ui/button';
-import axios from 'axios';
 
 import { makeMinimaxMove } from '../ai-players/MinimaxAI';
 import { makeMCTSMove } from '../ai-players/MCTS';
@@ -275,7 +274,7 @@ const Game = () => {
   const saveGameToDatabase = async (gameData) => {
     try {
       console.log('Sending game data:', gameData);
-      const response = await axios.post('/games/save', gameData, {
+      const response = await api.post('/games/save', gameData, {
         withCredentials: true,
       });
       console.log('Game saved successfully:', response.data);

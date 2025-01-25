@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -25,7 +24,7 @@ export default function Register() {
     e.preventDefault();
     const { name, email, password } = data;
     try {
-      const { data } = await axios.post('/auth/register', {
+      const { data } = await api.post('/auth/register', {
         name,
         email,
         password,

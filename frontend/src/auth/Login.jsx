@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/userContext';
@@ -12,6 +11,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { api } from '../lib/api';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ export default function Login() {
     e.preventDefault();
     const { email, password } = data;
     try {
-      const response = await axios.post('/auth/login', { email, password });
+      const response = await api.post('/auth/login', { email, password });
       if (response.data.error) {
         toast.error(response.data.error);
       } else {

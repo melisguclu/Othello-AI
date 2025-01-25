@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { UserContext } from '../context/userContext';
 
 const Header = () => {
@@ -9,7 +8,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post('/auth/logout');
+      await api.post('/auth/logout');
       setUser(null);
       navigate('/login');
     } catch (error) {
