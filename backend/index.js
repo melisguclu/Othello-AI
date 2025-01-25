@@ -65,7 +65,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/auth', authRoutes);
 app.use('/games', gameRoutes);
 
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
