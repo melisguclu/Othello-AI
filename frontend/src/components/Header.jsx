@@ -6,19 +6,8 @@ const Header = () => {
   const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    try {
-      await api.post('/auth/logout');
-      setUser(null);
-      navigate('/login');
-    } catch (error) {
-      console.error('Logout Error:', error);
-    }
-  };
-
   const handleProfileClick = () => {
     if (user) {
-      console.log('user', user);
       navigate('/profile');
     } else {
       navigate('/register');
@@ -37,17 +26,7 @@ const Header = () => {
           Othello
         </h1>
         <div style={headerLeft}>
-          <button onClick={handleProfileClick} style={button}>
-            <ion-icon name="person"></ion-icon>
-          </button>
-          <a
-            href="https://github.com/melisguclu"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={githubIconStyle}
-          >
-            <ion-icon name="logo-github"></ion-icon>
-          </a>
+          <button onClick={handleProfileClick}>Dashboard</button>
         </div>
       </header>
     </div>
@@ -75,30 +54,10 @@ const h1Style = {
   cursor: 'pointer',
 };
 
-const githubIconStyle = {
-  color: 'white',
-  fontSize: '2rem',
-  display: 'flex',
-  alignItems: 'center',
-};
-
 const headerLeft = {
   display: 'flex',
   gap: '1rem',
   alignItems: 'center',
-};
-
-const button = {
-  color: 'white',
-  fontSize: '2rem',
-  display: 'flex',
-  alignItems: 'center',
-  backgroundColor: 'transparent',
-  border: '2px solid white',
-  borderRadius: '50%',
-  width: '28px',
-  height: '28px',
-  padding: '1px',
 };
 
 export default Header;
