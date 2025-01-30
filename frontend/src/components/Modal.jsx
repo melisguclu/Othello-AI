@@ -11,7 +11,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { nanoid } from 'nanoid'; // Import nanoid
+import { nanoid } from 'nanoid';
+import { toast } from 'react-hot-toast';
 
 const Modal = ({ onClose, onSelect }) => {
   const [playType, setPlayType] = useState('human-vs-ai');
@@ -31,14 +32,6 @@ const Modal = ({ onClose, onSelect }) => {
     setAction('create');
   };
 
-  const handleJoinRoom = () => {
-    if (!roomId) {
-      alert('Please enter a valid Room ID');
-      return;
-    }
-    setAction('join');
-  };
-
   const handleSubmit = () => {
     if (playType === 'human-vs-ai') {
       onSelect({ playType, aiType });
@@ -52,6 +45,17 @@ const Modal = ({ onClose, onSelect }) => {
       onSelect({ playType, roomId, action });
     }
     onClose();
+  };
+
+  const handleCopyToClipboard = () => {
+    navigator.clipboard.writeText(roomId);
+    toast.success('Room ID copied to clipboard');
+  };
+
+  const handlePasteFromClipboard = async () => {
+    const text = await navigator.clipboard.readText();
+    setRoomId(text);
+    toast.success('Room ID pasted from clipboard');
   };
 
   const playTypeOptions = [
@@ -69,22 +73,20 @@ const Modal = ({ onClose, onSelect }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button
+        <Button
           style={{
-            padding: '10px 20px',
-            backgroundColor: '#000',
-            color: '#fff',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            margin: '40px',
+            ...buttonStyle,
+            marginTop: '20px',
+            marginBottom: '20px',
           }}
         >
           Start Game
-        </button>
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>Select Play Type</DialogTitle>
-        <div style={{ marginBottom: '20px' }}>
+        <DialogDescription>Choose a play mode.</DialogDescription>
+        <div>
           <Dropdown
             options={playTypeOptions}
             onChange={handlePlayTypeSelect}
@@ -121,12 +123,8 @@ const Modal = ({ onClose, onSelect }) => {
                   setAction('create');
                 }}
                 style={{
+                  ...buttonStyle,
                   backgroundColor: action === 'create' ? '#000' : '#ccc',
-                  color: 'white',
-                  padding: '10px 20px',
-                  borderRadius: '5px',
-                  fontSize: '16px',
-                  cursor: 'pointer',
                 }}
               >
                 Create Room
@@ -137,19 +135,15 @@ const Modal = ({ onClose, onSelect }) => {
                   setRoomId('');
                 }}
                 style={{
+                  ...buttonStyle,
                   backgroundColor: action === 'join' ? '#000' : '#ccc',
-                  color: 'white',
-                  padding: '10px 20px',
-                  borderRadius: '5px',
-                  fontSize: '16px',
-                  cursor: 'pointer',
                 }}
               >
                 Join Room
               </Button>
             </div>
             {action && (
-              <div>
+              <div className="flex justify-center items-center gap-1">
                 <input
                   type="text"
                   value={roomId}
@@ -160,36 +154,50 @@ const Modal = ({ onClose, onSelect }) => {
                       : 'Enter Room ID'
                   }
                   readOnly={action === 'create'}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    borderRadius: '5px',
-                    border: '1px solid #ccc',
-                    fontSize: '16px',
-                    textAlign: 'center',
-                  }}
+                  style={{ ...inputStyle }}
                 />
+                {action === 'create' && (
+                  <Button onClick={handleCopyToClipboard} style={buttonStyle}>
+                    Copy
+                  </Button>
+                )}
+                {action === 'join' && (
+                  <Button
+                    onClick={handlePasteFromClipboard}
+                    style={buttonStyle}
+                  >
+                    Paste
+                  </Button>
+                )}
               </div>
             )}
           </div>
         )}
 
-        <Button
-          onClick={handleSubmit}
-          style={{
-            backgroundColor: 'black',
-            color: 'white',
-            padding: '10px',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            height: '45px',
-          }}
-        >
+        <Button onClick={handleSubmit} style={{ ...buttonStyle }}>
           Start Game
         </Button>
       </DialogContent>
     </Dialog>
   );
+};
+
+const buttonStyle = {
+  padding: '10px',
+  backgroundColor: '#000',
+  borderRadius: '5px',
+  cursor: 'pointer',
+  padding: '10px 20px',
+  height: '45px',
+};
+
+const inputStyle = {
+  width: '100%',
+  padding: '10px',
+  borderRadius: '5px',
+  border: '1px solid #ccc',
+  fontSize: '16px',
+  textAlign: 'center',
 };
 
 export default Modal;
