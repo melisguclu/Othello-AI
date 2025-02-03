@@ -1,25 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../context/userContext';
 import { useNavigate } from 'react-router-dom';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-} from 'recharts';
 import { api } from '../lib/api';
+import RecentGamesCard from '../components/dashboard/RecentGamesCard';
+import ProfileCard from '../components/dashboard/ProfileCard';
+import GameChartCard from '../components/dashboard/GameChartCard';
+import StatisticsCard from '../components/dashboard/StatisticsCard';
 
 export default function Profile() {
   const { user, setUser } = useContext(UserContext);
@@ -35,12 +21,8 @@ export default function Profile() {
     wins: 0,
     losses: 0,
     winRate: '0.00%',
+    aiStats: {},
   });
-
-  const userLevel = {
-    level: 5,
-    progress: 70, // percentage
-  };
 
   const handleLogout = async () => {
     try {
@@ -62,9 +44,8 @@ export default function Profile() {
         setLoadingGames(true);
         const response = await api.get(`/games/user/${user.id}`);
         console.log('Recent games:', response.data.games);
-        // Son 5 oyunu al
-        const limitedGames = response.data.games.slice(0, 5);
-        setRecentGames(limitedGames);
+        const lastFiveGames = response.data.games.slice(0, 5);
+        setRecentGames(lastFiveGames);
       } catch (error) {
         console.error('Error fetching recent games:', error);
       } finally {
@@ -107,135 +88,19 @@ export default function Profile() {
 
   return (
     <div className="grid grid-cols-1 gap-8 p-4 sm:p-6 md:grid-cols-2 lg:grid-cols-3 bg-gray-100">
-      {/* User Information Card */}
-      <Card className="col-span-1 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-center text-xl font-bold">
-            Profile
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4 text-center">
-          {user ? (
-            <div>
-              <h2 className="text-lg font-semibold">Welcome, {user.name}!</h2>
-              <p className="text-sm text-gray-600">Email: {user.email}</p>
-            </div>
-          ) : (
-            <p className="text-sm text-gray-600">
-              No user information available.
-            </p>
-          )}
-        </CardContent>
-        <CardFooter className="flex justify-center">
-          <Button
-            onClick={handleLogout}
-            className="w-full bg-red-600 hover:bg-red-700 text-white"
-          >
-            Logout
-          </Button>
-        </CardFooter>
-      </Card>
-
-      {/* Recent Games Card */}
-      <Card className="col-span-1 shadow-lg md:col-span-2">
-        <CardHeader>
-          <CardTitle className="text-center text-xl font-bold">
-            Recent Games
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {loadingGames ? (
-            <p>Loading recent games...</p>
-          ) : recentGames.length > 0 ? (
-            <div className="divide-y divide-gray-300">
-              {recentGames.map((game) => (
-                <div
-                  key={game._id}
-                  className="grid grid-cols-4 items-center py-2 text-center"
-                >
-                  <span className="font-medium text-start">{game.mode}</span>
-                  <span className="font-medium">{game.aiType}</span>
-                  <span
-                    className={`font-semibold ${
-                      game.result === 'win' ? 'text-green-500' : 'text-red-500'
-                    }`}
-                  >
-                    {game.result}
-                  </span>
-                  <span className="text-gray-500 text-sm text-end">
-                    {new Date(game.date).toLocaleDateString()}
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-gray-600">No recent games found.</p>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Personal Statistics Card */}
-      <Card className="col-span-1 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-center text-xl font-bold">
-            Personal Statistics
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-center">
-          {loadingStats ? (
-            <p>Loading statistics...</p>
-          ) : (
-            <>
-              <p>Total Games: {personalStats.totalGames}</p>
-              <p>Wins: {personalStats.wins}</p>
-              <p>Losses: {personalStats.losses}</p>
-              <p>Win Rate: {personalStats.winRate}%</p>
-            </>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Game Statistics Chart Card */}
-      <Card className="col-span-1 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-center text-xl font-bold">
-            Game Statistics
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col justify-center items-center">
-          {loadingChart ? (
-            <p>Loading game statistics...</p>
-          ) : (
-            <BarChart
-              width={window.innerWidth < 768 ? 200 : 300}
-              height={250}
-              data={chartData}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="played" fill="#2563eb" />
-              <Bar dataKey="won" fill="#16a34a" />
-            </BarChart>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* User Level Card */}
-      <Card className="col-span-1 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-center text-xl font-bold">
-            User Level
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-center space-y-4">
-          <p>Level: {userLevel.level}</p>
-          <Progress value={userLevel.progress} className="h-4" />
-          <p>{userLevel.progress}% to next level</p>
-        </CardContent>
-      </Card>
+      <ProfileCard user={user} handleLogout={handleLogout} />
+      <RecentGamesCard recentGames={recentGames} loadingGames={loadingGames} />
+      <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="w-full">
+          <StatisticsCard
+            personalStats={personalStats}
+            loadingStats={loadingStats}
+          />
+        </div>
+        <div className="w-full">
+          <GameChartCard chartData={chartData} loadingChart={loadingChart} />
+        </div>
+      </div>
     </div>
   );
 }
