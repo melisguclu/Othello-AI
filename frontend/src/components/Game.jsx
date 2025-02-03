@@ -19,6 +19,7 @@ import { toast } from 'react-hot-toast';
 import { useContext } from 'react';
 import { UserContext } from '../context/userContext';
 import { useSocket } from '../context/SocketContext';
+import { api } from '../lib/api';
 
 const initialBoard = () => {
   const board = Array(8)
@@ -302,15 +303,6 @@ const Game = () => {
           </h2>
         </div>
       )}
-      {gameOver && (
-        <GameOverModal
-          open={gameOverModalOpen}
-          onClose={handleCloseGameOverModal}
-          winner={winner}
-          score={score}
-          onRestart={handleRestart}
-        />
-      )}
       {gameStarted && (
         <>
           <div className="flex justify-center items-center gap-5">
@@ -320,6 +312,15 @@ const Game = () => {
             </Button>
           </div>
         </>
+      )}
+      {gameOver && (
+        <GameOverModal
+          open={gameOverModalOpen}
+          onClose={handleCloseGameOverModal}
+          winner={winner}
+          score={score}
+          onRestart={handleRestart}
+        />
       )}
       <Board
         board={board}

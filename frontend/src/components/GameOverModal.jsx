@@ -14,11 +14,10 @@ const GameOverModal = ({ open, onClose, winner, score, onRestart }) => {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Game Over!</DialogTitle>
+          <DialogTitle>
+            Game Over. {winner == 'win' ? 'You Win!' : 'You Lost!'}
+          </DialogTitle>
           <DialogDescription>
-            <p>
-              <strong>Winner:</strong> {winner ? winner : 'Draw!'}
-            </p>
             <p>
               <strong>Score:</strong> Black: {score.B} - White: {score.W}
             </p>
