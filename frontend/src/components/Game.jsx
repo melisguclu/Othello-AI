@@ -51,48 +51,45 @@ const Game = () => {
   const [waitingForPlayer, setWaitingForPlayer] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      console.log('User logged in:', user);
-    } else {
-      console.log('User logged out or not defined.');
-    }
-  }, [user]);
+    if (!socket || !roomId || playType !== 'play-with-friend') return;
 
-  useEffect(() => {
-    if (socket) {
-      if (playType === 'play-with-friend') {
-        socket.emit('joinRoom', roomId);
+    socket.emit('joinRoom', roomId);
 
-        socket.on('receiveMove', (move) => {
-          const { row, col, player } = move;
-          console.log('Move received:', move);
-          const newBoard = copyBoard(board);
-          makeMove(newBoard, row, col, player);
-          setBoard(newBoard);
-          setCurrentPlayer(player === 'B' ? 'W' : 'B');
-        });
+    const handleGameState = ({ board, currentPlayer }) => {
+      setBoard(board);
+      setCurrentPlayer(currentPlayer);
+    };
 
-        socket.on('playerJoined', (players) => {
-          if (players === 2) {
-            console.log('Both players have joined the room. Game starting...');
-            setWaitingForPlayer(false);
-            setGameStarted(true);
-          }
-        });
+    const handleReceiveMove = ({ board, currentPlayer }) => {
+      setBoard(board);
+      setCurrentPlayer(currentPlayer);
+    };
 
-        socket.on('playerLeft', () => {
-          setWaitingForPlayer(true);
-          setGameStarted(false);
-        });
+    const handlePlayerJoined = (players) => {
+      if (players === 2) {
+        setWaitingForPlayer(false);
+        setGameStarted(true);
       }
+    };
 
-      return () => {
-        socket.off('receiveMove');
-        socket.off('playerJoined');
-        socket.off('playerLeft');
-      };
-    }
-  }, [socket, board, roomId, playType]);
+    const handlePlayerLeft = () => {
+      console.log('Opponent left the room.');
+      setWaitingForPlayer(true);
+      setGameStarted(false);
+    };
+
+    socket.on('gameState', handleGameState);
+    socket.on('receiveMove', handleReceiveMove);
+    socket.on('playerJoined', handlePlayerJoined);
+    socket.on('playerLeft', handlePlayerLeft);
+
+    return () => {
+      socket.off('gameState', handleGameState);
+      socket.off('receiveMove', handleReceiveMove);
+      socket.off('playerJoined', handlePlayerJoined);
+      socket.off('playerLeft', handlePlayerLeft);
+    };
+  }, [socket, roomId, playType]);
 
   const checkGameOver = (newBoard) => {
     const blackValidMoves = getValidMoves(newBoard, 'B').length > 0;
