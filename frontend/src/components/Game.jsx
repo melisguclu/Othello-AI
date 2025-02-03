@@ -79,11 +79,17 @@ const Game = () => {
             setGameStarted(true);
           }
         });
+
+        socket.on('playerLeft', () => {
+          setWaitingForPlayer(true);
+          setGameStarted(false);
+        });
       }
 
       return () => {
         socket.off('receiveMove');
         socket.off('playerJoined');
+        socket.off('playerLeft');
       };
     }
   }, [socket, board, roomId, playType]);

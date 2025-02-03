@@ -36,6 +36,17 @@ io.on('connection', (socket) => {
     const room = io.sockets.adapter.rooms.get(roomId);
     const players = room ? room.size : 0;
 
+    if(!rooms[roomId]) {
+      rooms[roomId] = {players: []}
+    }
+
+    //if the player is already in the room, don't add them again
+    if(!rooms[roomId].players.includes(socket.id)) {
+      rooms[roomId].players.push(socket.id);
+    }
+
+    console.log('Players in room:', rooms[roomId].players);
+   
     io.to(roomId).emit('playerJoined', players);
   });
 
@@ -53,7 +64,24 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log(`A user disconnected: ${socket.id}`);
+  
+    // Kullanıcının hangi odada olduğunu bul
+    let userRoomId = null;
+    for (const [roomId, room] of Object.entries(rooms)) {
+      if (room.players.includes(socket.id)) {
+        userRoomId = roomId;
+        // Kullanıcıyı odadan çıkar
+        rooms[roomId].players = rooms[roomId].players.filter(id => id !== socket.id);
+        break;
+      }
+    }
+  
+    if (userRoomId) {
+      console.log(`User ${socket.id} left room ${userRoomId}`);
+      io.to(userRoomId).emit('playerLeft');
+    }
   });
+  
 });
 
 
