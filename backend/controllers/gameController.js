@@ -59,7 +59,15 @@ const getUserStatistics = async (req, res) => {
     const losses = games.filter((game) => game.result === 'loss').length;
     const winRate = totalGames > 0 ? ((wins / totalGames) * 100).toFixed(2) : '0.00';
 
-    res.json({ totalGames, wins, losses, winRate });
+    const aiGames = games.filter((game) => game.mode === 'human-vs-ai');
+    const aiStats = aiGames.reduce((acc, game) => {
+      if (game.aiType) {
+        acc[game.aiType] = (acc[game.aiType] || 0) + 1;
+      }
+      return acc;
+    }, {});
+
+    res.json({ totalGames, wins, losses, winRate, aiStats });
   } catch (error) {
     console.error('Error fetching user statistics:', error);
     res.json({ error: 'Failed to fetch statistics' });
