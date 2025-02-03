@@ -49,15 +49,17 @@ const Game = () => {
   const socket = useSocket();
   const [roomId, setRoomId] = useState('');
   const [waitingForPlayer, setWaitingForPlayer] = useState(false);
+  const [playerColor, setPlayerColor] = useState(null);
 
   useEffect(() => {
     if (!socket || !roomId || playType !== 'play-with-friend') return;
 
     socket.emit('joinRoom', roomId);
 
-    const handleGameState = ({ board, currentPlayer }) => {
+    const handleGameState = ({ board, currentPlayer, assignedColor }) => {
       setBoard(board);
       setCurrentPlayer(currentPlayer);
+      setPlayerColor(assignedColor);
     };
 
     const handleReceiveMove = ({ board, currentPlayer }) => {
@@ -135,6 +137,12 @@ const Game = () => {
         );
         return;
       }
+
+      if (playType === 'play-with-friend' && playerColor !== currentPlayer) {
+        toast.error("It's not your turn!");
+        return;
+      }
+
       if (!isValidMove(board, row, col, currentPlayer)) {
         toast.error('Invalid move! Please select a valid move (grey cells)');
         return;
@@ -151,6 +159,7 @@ const Game = () => {
           socket.emit('makeMove', {
             roomId,
             move: { row, col, player: currentPlayer },
+            playerId: socket.id, //send player id to backend to check if its their turn
           });
         }
 
@@ -159,7 +168,7 @@ const Game = () => {
         }
       }
     },
-    [board, currentPlayer, playType, score, gameStarted]
+    [board, currentPlayer, playType, score, gameStarted, playerColor]
   );
 
   useEffect(() => {
@@ -309,7 +318,12 @@ const Game = () => {
       {gameStarted && (
         <>
           <div className="flex justify-center items-center gap-5">
-            <ScoreBoard score={score} playType={playType} aiType={aiType} />
+            <ScoreBoard
+              score={score}
+              playType={playType}
+              aiType={aiType}
+              currentPlayer={currentPlayer}
+            />
             <Button onClick={handleRestart} className="mt-4 mb-4">
               <ion-icon name="refresh"></ion-icon>
             </Button>

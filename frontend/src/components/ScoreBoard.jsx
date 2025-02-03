@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const ScoreBoard = ({ score, playType, aiType }) => {
+const ScoreBoard = ({ score, playType, aiType, currentPlayer }) => {
   return (
     <>
       <ScoreBoardContainer>
@@ -9,8 +9,12 @@ const ScoreBoard = ({ score, playType, aiType }) => {
         {playType === 'human-vs-ai' && (
           <ScoreHeading>AI Type: {aiType}</ScoreHeading>
         )}
-        <ScoreHeading>Black: {score.B}</ScoreHeading>
-        <ScoreHeading>White: {score.W}</ScoreHeading>
+        <ScoreHeading $isactive={currentPlayer === 'B'}>
+          Black: {score.B}
+        </ScoreHeading>
+        <ScoreHeading $isactive={currentPlayer === 'W'}>
+          White: {score.W}
+        </ScoreHeading>
       </ScoreBoardContainer>
     </>
   );
@@ -43,6 +47,7 @@ const ScoreHeading = styled.h2`
   margin: 0;
   flex: 1 1 auto;
   text-align: center;
+  text-decoration: ${({ $isActive }) => ($isActive ? 'underline' : 'none')};
 
   @media (max-width: 768px) {
     font-size: 14px;

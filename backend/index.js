@@ -37,6 +37,7 @@ io.on('connection', (socket) => {
         players: [],
         board: Array(8).fill(null).map(() => Array(8).fill(null)), 
         currentPlayer: 'B',
+        playerColors: {}, 
       };
       rooms[roomId].board[3][3] = 'W';
       rooms[roomId].board[3][4] = 'B';
@@ -44,50 +45,55 @@ io.on('connection', (socket) => {
       rooms[roomId].board[4][4] = 'W';
     }
 
-    if (!rooms[roomId].players.includes(socket.id)) {
-      rooms[roomId].players.push(socket.id);
-    }
+    let assignedColor = rooms[roomId].players.length === 0 ? 'B' : 'W';
+    rooms[roomId].players.push(socket.id);
+    rooms[roomId].playerColors[socket.id] = assignedColor;
 
-    console.log('Players in room:', rooms[roomId].players);
+    // console.log(`User ${socket.id} assigned color: ${assignedColor}`);
 
     socket.emit('gameState', {
       board: rooms[roomId].board,
       currentPlayer: rooms[roomId].currentPlayer,
+      assignedColor
     });
 
     io.to(roomId).emit('playerJoined', rooms[roomId].players.length);
   });
 
-  socket.on('makeMove', ({ roomId, move }) => {
+  socket.on('makeMove', ({ roomId, move, playerId }) => {
     if (!rooms[roomId]) return;
-    
-    console.log(`Move in room ${roomId}:`, move);
     
     const { row, col, player } = move;
 
+    if (rooms[roomId].playerColors[playerId] !== player) {
+      // console.log(`Invalid move attempt by ${playerId}. Not their turn.`);
+      return;
+    }
+  
     rooms[roomId].board[row][col] = player;
-        rooms[roomId].currentPlayer = player === 'B' ? 'W' : 'B';
+    rooms[roomId].currentPlayer = player === 'B' ? 'W' : 'B';
 
-    io.to(roomId).emit('receiveMove', { //send the move to all players in the room
+    io.to(roomId).emit('receiveMove', {
       board: rooms[roomId].board,
       currentPlayer: rooms[roomId].currentPlayer,
     });
   });
 
   socket.on('disconnect', () => {
-    console.log(`A user disconnected: ${socket.id}`);
+    // console.log(`A user disconnected: ${socket.id}`);
 
     let userRoomId = null;
     for (const [roomId, room] of Object.entries(rooms)) {
       if (room.players.includes(socket.id)) {
         userRoomId = roomId;
         rooms[roomId].players = rooms[roomId].players.filter(id => id !== socket.id);
+        delete rooms[roomId].playerColors[socket.id]; 
         break;
       }
     }
 
     if (userRoomId) {
-      console.log(`User ${socket.id} left room ${userRoomId}`);
+      // console.log(`User ${socket.id} left room ${userRoomId}`);
       io.to(userRoomId).emit('playerLeft');
     }
   });
