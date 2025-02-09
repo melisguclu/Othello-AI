@@ -62,9 +62,13 @@ const Game = () => {
       setPlayerColor(assignedColor);
     };
 
-    const handleReceiveMove = ({ board, currentPlayer }) => {
+    const handleReceiveMove = ({ board, currentPlayer, latestDisc }) => {
       setBoard(board);
       setCurrentPlayer(currentPlayer);
+
+      if (latestDisc) {
+        setLatestDisc(latestDisc);
+      }
     };
 
     const handlePlayerJoined = (players) => {

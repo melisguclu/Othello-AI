@@ -72,10 +72,12 @@ io.on('connection', (socket) => {
   
     rooms[roomId].board[row][col] = player;
     rooms[roomId].currentPlayer = player === 'B' ? 'W' : 'B';
+    rooms[roomId].latestDisc = {row, col}
 
     io.to(roomId).emit('receiveMove', {
       board: rooms[roomId].board,
       currentPlayer: rooms[roomId].currentPlayer,
+      latestDisc: rooms[roomId].latestDisc,
     });
   });
 
