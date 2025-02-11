@@ -47,7 +47,7 @@ const ScoreHeading = styled.h2`
   margin: 0;
   flex: 1 1 auto;
   text-align: center;
-  text-decoration: ${({ $isActive }) => ($isActive ? 'underline' : 'none')};
+  text-decoration: ${({ $isactive }) => ($isactive ? 'underline' : 'none')};
 
   @media (max-width: 768px) {
     font-size: 14px;
