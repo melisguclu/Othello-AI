@@ -6,10 +6,12 @@ import {
   CardHeader,
   CardTitle,
   CardContent,
-  CardFooter,
+  CardDescription,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { api } from '../lib/api';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -24,15 +26,15 @@ export default function Register() {
     e.preventDefault();
     const { name, email, password } = data;
     try {
-      const { data } = await api.post('/auth/register', {
+      const { data: responseData } = await api.post('/auth/register', {
         name,
         email,
         password,
       });
-      if (data.error) {
-        return toast.error(data.error);
+      if (responseData.error) {
+        toast.error(responseData.error);
       } else {
-        setData({});
+        setData({ name: '', email: '', password: '' });
         toast.success('Registration Successful');
         navigate('/login');
       }
@@ -46,87 +48,64 @@ export default function Register() {
     <div className="flex items-center justify-center h-screen bg-gray-100">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader>
-          <CardTitle className="text-center text-xl font-bold">
-            Register
-          </CardTitle>
+          <CardTitle className="text-2xl">Register</CardTitle>
+          <CardDescription>
+            Enter your details to create a new account
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4" onSubmit={registerUser}>
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Name
-              </label>
-              <Input
-                type="text"
-                id="name"
-                name="name"
-                value={data.name}
-                onChange={(e) =>
-                  setData({ ...data, [e.target.name]: e.target.value })
-                }
-                placeholder="Enter your name"
-              />
+          <form onSubmit={registerUser}>
+            <div className="flex flex-col gap-6">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Username</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Enter your username"
+                  value={data.name}
+                  onChange={(e) => setData({ ...data, name: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  value={data.email}
+                  onChange={(e) => setData({ ...data, email: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={data.password}
+                  onChange={(e) =>
+                    setData({ ...data, password: e.target.value })
+                  }
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full">
+                Register
+              </Button>
             </div>
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
+            <div className="mt-4 text-center text-sm">
+              Already have an account?{' '}
+              <a
+                href="#"
+                className="underline underline-offset-4"
+                onClick={() => navigate('/login')}
               >
-                Email
-              </label>
-              <Input
-                type="email"
-                id="email"
-                name="email"
-                value={data.email}
-                onChange={(e) =>
-                  setData({ ...data, [e.target.name]: e.target.value })
-                }
-                placeholder="Enter your email"
-              />
+                Login
+              </a>
             </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <Input
-                type="password"
-                id="password"
-                name="password"
-                value={data.password}
-                onChange={(e) =>
-                  setData({ ...data, [e.target.name]: e.target.value })
-                }
-                placeholder="Enter your password"
-              />
-            </div>
-            <Button type="submit" className="w-full">
-              Register
-            </Button>
           </form>
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/login')}
-            className="text-blue-600 hover:text-blue-700"
-          >
-            Already have an account? Login
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/')}
-            className="text-blue-600 hover:text-blue-700"
-          >
-            Back to Game
-          </Button>
-        </CardFooter>
       </Card>
     </div>
   );
