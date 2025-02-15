@@ -20,7 +20,7 @@ export default function ProfileCard({ user, handleLogout }) {
   };
 
   return (
-    <Card className="col-span-1 shadow-lg">
+    <Card className="col-span-3 shadow-sm  md:col-span-3 lg:col-span-1 sm:col-span-3 ">
       <CardHeader>
         <CardTitle className="text-center text-xl font-bold">Profile</CardTitle>
       </CardHeader>

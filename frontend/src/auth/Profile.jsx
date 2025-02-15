@@ -35,6 +35,12 @@ export default function Profile() {
   };
 
   useEffect(() => {
+    // console.log('User:', user);
+
+    if (!user) {
+      return;
+    }
+
     const fetchRecentGames = async () => {
       if (!user) {
         setLoadingGames(false);
@@ -42,8 +48,8 @@ export default function Profile() {
       }
       try {
         setLoadingGames(true);
-        const response = await api.get(`/games/user/${user.id}`);
-        console.log('Recent games:', response.data.games);
+        const response = await api.get(`/games/user/${user._id}`);
+        // console.log('Recent games:', response.data.games);
         const lastFiveGames = response.data.games.slice(0, 5);
         setRecentGames(lastFiveGames);
       } catch (error) {
@@ -58,7 +64,7 @@ export default function Profile() {
 
       try {
         setLoadingStats(true);
-        const response = await api.get(`/games/statistics/${user.id}`);
+        const response = await api.get(`/games/statistics/${user._id}`);
         setPersonalStats(response.data);
       } catch (error) {
         console.error('Error fetching statistics:', error);
@@ -72,7 +78,7 @@ export default function Profile() {
 
       try {
         setLoadingChart(true);
-        const response = await api.get(`/games/statistics/monthly/${user.id}`);
+        const response = await api.get(`/games/statistics/monthly/${user._id}`);
         setChartData(response.data.statistics);
       } catch (error) {
         console.error('Error fetching monthly statistics:', error);
@@ -90,14 +96,14 @@ export default function Profile() {
     <div className="grid grid-cols-1 gap-8 p-4 sm:p-6 md:grid-cols-2 lg:grid-cols-3 bg-gray-100">
       <ProfileCard user={user} handleLogout={handleLogout} />
       <RecentGamesCard recentGames={recentGames} loadingGames={loadingGames} />
-      <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="w-full">
+      <div className="grid grid-cols-4 col-span-3 md:grid-cols-4 gap-4 items-stretch">
+        <div className="w-full col-span-4 md:col-span-4 lg:col-span-2 flex flex-col">
           <StatisticsCard
             personalStats={personalStats}
             loadingStats={loadingStats}
           />
         </div>
-        <div className="w-full">
+        <div className="w-full md:col-span-4 lg:col-span-2 col-span-4 flex flex-col">
           <GameChartCard chartData={chartData} loadingChart={loadingChart} />
         </div>
       </div>

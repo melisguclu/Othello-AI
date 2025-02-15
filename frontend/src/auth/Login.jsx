@@ -30,6 +30,7 @@ export default function Login() {
       if (response.data.error) {
         toast.error(response.data.error);
       } else {
+        console.log(response.data);
         setUser(response.data.user); // Update the user context immediately
         setData({ email: '', password: '' });
         toast.success(response.data.message);

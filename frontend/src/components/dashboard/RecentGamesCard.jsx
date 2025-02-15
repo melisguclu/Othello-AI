@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 export default function RecentGamesCard({ recentGames, loadingGames }) {
   return (
-    <Card className="col-span-1 shadow-lg md:col-span-2">
+    <Card className="col-span-3 shadow-sm md:col-span-3 lg:col-span-2 sm:col-span-3 ">
       <CardHeader>
         <CardTitle className="text-center text-xl font-bold">
           Recent Games
