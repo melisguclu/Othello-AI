@@ -60,7 +60,7 @@ export default function AIOpponentStatistics({ personalStats }) {
           <>
             <ChartContainer
               config={chartConfig}
-              className="mx-auto aspect-square w-full max-w-[250px] "
+              className="mx-auto aspect-square w-full max-w-[250px] min-h-[180px] "
             >
               <RadialBarChart
                 data={chartData}
