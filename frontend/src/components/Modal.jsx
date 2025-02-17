@@ -187,7 +187,6 @@ const buttonStyle = {
   backgroundColor: '#000',
   borderRadius: '5px',
   cursor: 'pointer',
-  padding: '10px 20px',
   height: '45px',
 };
 
