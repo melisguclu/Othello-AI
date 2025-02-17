@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
 const cookieParser = require('cookie-parser');
 const gameRoutes = require('./routes/gameRoutes');
+const attachUser = require('./middleware/attach-user');
 
 const app = express();
 
@@ -20,7 +21,13 @@ const io = new Server(server, {
   },
 });
 
+// const corsOptions = {
+//   origin: 'http://localhost:5173', 
+//   credentials: true,
+// };
+
 const rooms = {}; 
+
 io.on('connection', (socket) => {
   console.log(`A user connected: ${socket.id}`);
 
@@ -105,9 +112,11 @@ io.on('connection', (socket) => {
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URL).then(() => console.log('Connected to MongoDB')).catch((err) => console.error('MongoDB Connection Error:', err));
 
-app.use(cors({ origin: true, credentials: true }));
-app.use(express.json());
 app.use(cookieParser());
+app.use(attachUser);
+// app.use(cors(corsOptions));
+app.use(express.json());
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.urlencoded({ extended: false }));
 app.use('/auth', authRoutes);
 app.use('/games', gameRoutes);

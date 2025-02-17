@@ -64,7 +64,7 @@ const loginUser = async (req, res) => {
     const token = jwt.sign(
       {
         email: user.email,
-        id: user._id,
+        _id: user._id,
         name: user.name,
       },
       process.env.JWT_SECRET,
@@ -108,10 +108,11 @@ const getProfile = (req, res) =>{
 const logoutUser = (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: true,
+    sameSite: 'none',
   });
-  res.json({ message: 'Logout successful' });
+
+  res.status(200).json({ message: 'Logout successful' });
 };
 
 

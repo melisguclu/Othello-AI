@@ -26,12 +26,22 @@ export default function Login() {
     e.preventDefault();
     const { email, password } = data;
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post(
+        '/auth/login',
+        { email, password },
+        { withCredentials: true }
+      );
+
       if (response.data.error) {
         toast.error(response.data.error);
       } else {
-        console.log(response.data);
-        setUser(response.data.user); // Update the user context immediately
+        const profileResponse = await api.get('/auth/profile', {
+          withCredentials: true,
+        });
+
+        localStorage.setItem('token', response.data.token); //save token in local storage
+        setUser(profileResponse.data);
+
         setData({ email: '', password: '' });
         toast.success(response.data.message);
         navigate('/profile');

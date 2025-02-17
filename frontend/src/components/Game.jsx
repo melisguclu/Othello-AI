@@ -107,7 +107,6 @@ const Game = () => {
 
       if (user) {
         const gameData = {
-          userId: user.id,
           mode: playType,
           aiType: aiType || null,
           result: winner,

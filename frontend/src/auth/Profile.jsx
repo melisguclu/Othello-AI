@@ -26,7 +26,7 @@ export default function Profile() {
 
   const handleLogout = async () => {
     try {
-      await api.post('/auth/logout');
+      await api.post('/auth/logout', {}, { withCredentials: true });
       setUser(null);
       navigate('/login');
     } catch (error) {
@@ -42,14 +42,11 @@ export default function Profile() {
     }
 
     const fetchRecentGames = async () => {
-      if (!user) {
-        setLoadingGames(false);
-        return;
-      }
       try {
         setLoadingGames(true);
-        const response = await api.get(`/games/user/${user._id}`);
-        // console.log('Recent games:', response.data.games);
+        const response = await api.get('/games/user', {
+          withCredentials: true,
+        });
         const lastFiveGames = response.data.games.slice(0, 5);
         setRecentGames(lastFiveGames);
       } catch (error) {
@@ -60,11 +57,11 @@ export default function Profile() {
     };
 
     const fetchStatistics = async () => {
-      if (!user) return;
-
       try {
         setLoadingStats(true);
-        const response = await api.get(`/games/statistics/${user._id}`);
+        const response = await api.get('/games/statistics', {
+          withCredentials: true,
+        });
         setPersonalStats(response.data);
       } catch (error) {
         console.error('Error fetching statistics:', error);
@@ -74,11 +71,11 @@ export default function Profile() {
     };
 
     const fetchMonthlyStatistics = async () => {
-      if (!user) return;
-
       try {
         setLoadingChart(true);
-        const response = await api.get(`/games/statistics/monthly/${user._id}`);
+        const response = await api.get('/games/statistics/monthly', {
+          withCredentials: true,
+        });
         setChartData(response.data.statistics);
       } catch (error) {
         console.error('Error fetching monthly statistics:', error);
