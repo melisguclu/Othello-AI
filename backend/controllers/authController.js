@@ -74,13 +74,14 @@ const loginUser = async (req, res) => {
 
     // Send cookie with token
     return res
-      .cookie('token', token, {
-        domain: process.env.COOKIE_DOMAIN,
-        httpOnly: true, // Prevents access from client-side JavaScript
-        secure: process.env.NODE_ENV === 'production', // Ensures HTTPS in production
-        sameSite: process.env.NODE_ENV === 'production' ? 'None' : undefined, // Prevents CSRF
-      })
-      .json({ message: 'Login successful', user });
+    .cookie('token', token, {
+      domain: process.env.COOKIE_DOMAIN,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production' ? true : false, 
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', 
+    })
+    .json({ message: 'Login successful', user });
+  
   } catch (error) {
     console.error('Login Error:', error);
     return res.status(500).json({ error: 'Something went wrong' });
