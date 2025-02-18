@@ -1,20 +1,11 @@
 const jwt = require('jsonwebtoken');
 
 const ensureAuth = (req, res, next) => {
-  const token = req.cookies.token;
-
-  if (!token) {
-    return res.status(401).json({ error: 'Unauthorized - No token provided' });
+  if (!req.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(401).json({ error: 'Unauthorized - Invalid token' });
-    }
-
-    req.user = decoded;
-    next();
-  });
+  next();
 };
 
 module.exports = ensureAuth;

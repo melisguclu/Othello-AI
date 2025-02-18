@@ -77,10 +77,8 @@ const loginUser = async (req, res) => {
       .cookie('token', token, {
         domain: process.env.COOKIE_DOMAIN,
         httpOnly: true, // Prevents access from client-side JavaScript
-        // secure: process.env.NODE_ENV === 'production', // Ensures HTTPS in production
-        secure: true,
-        sameSite: 'none',
-        // sameSite: process.env.NODE_ENV === 'production' ? 'strict' : undefined, // Prevents CSRF
+        secure: process.env.NODE_ENV === 'production', // Ensures HTTPS in production
+        sameSite: process.env.NODE_ENV === 'production' ? 'None' : undefined, // Prevents CSRF
       })
       .json({ message: 'Login successful', user });
   } catch (error) {
@@ -90,19 +88,7 @@ const loginUser = async (req, res) => {
 };
 
 const getProfile = (req, res) =>{
-  const {token } = req.cookies
-  if(token){
-    jwt.verify(token, process.env.JWT_SECRET, {},  (err, user) => {
-      if(err) {
-        return res.status(401).json({error: 'Unauthorized'})
-      }
-      res.json(user)
-    })
-
-  }
-  else{
-    res.json(null)
-  }
+  res.json(req.user)
 }
 
 const logoutUser = (req, res) => {

@@ -113,11 +113,13 @@ io.on('connection', (socket) => {
 mongoose.connect(process.env.MONGO_URL).then(() => console.log('Connected to MongoDB')).catch((err) => console.error('MongoDB Connection Error:', err));
 
 app.use(cookieParser());
-app.use(attachUser);
 // app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.urlencoded({ extended: false }));
+
+app.use(attachUser);
+
 app.use('/auth', authRoutes);
 app.use('/games', gameRoutes);
 

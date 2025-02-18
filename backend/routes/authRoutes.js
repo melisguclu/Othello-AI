@@ -8,7 +8,7 @@ router.get('/', test)
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
-router.get('/profile', getProfile, ensureAuth);
+router.get('/profile', ensureAuth, getProfile);
 router.post('/logout', logoutUser); 
 
 
