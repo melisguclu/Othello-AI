@@ -30,13 +30,13 @@ const registerUser = async (req, res) => {
 
     const hashedPassword = await hashPassword(password);
 
-    const user = await User.create({ 
+    const user = await User.create({
       name,
       email,
       password: hashedPassword,
-    });  
+    });
     return res.json({ message: 'User created', user });
-    
+
   } catch (error) {
     console.error(error);
     return res.json({ error: 'Something went wrong' });
@@ -79,11 +79,13 @@ const loginUser = async (req, res) => {
       httpOnly: true,
       path: "/",
       expires: new Date(Date.now() + 60 * 60 * 24 * 14 * 1000),
-      secure: process.env.NODE_ENV === 'production' ? true : false, 
-      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', 
+      // secure: process.env.NODE_ENV === 'production' ? true : false,
+      secure: true,
+      // sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      sameSite: 'None',
     })
     .json({ message: 'Login successful', user });
-  
+
   } catch (error) {
     console.error('Login Error:', error);
     return res.status(500).json({ error: 'Something went wrong' });
