@@ -82,7 +82,7 @@ const loginUser = async (req, res) => {
       // secure: process.env.NODE_ENV === 'production' ? true : false,
       secure: true,
       // sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
-      sameSite: 'None',
+      sameSite: 'Lax',
     })
     .json({ message: 'Login successful', user });
 
