@@ -77,7 +77,7 @@ const loginUser = async (req, res) => {
     .cookie('token', token, {
       domain: process.env.COOKIE_DOMAIN,
       httpOnly: true,
-      path: "/",
+      // path: "/",
       expires: new Date(Date.now() + 60 * 60 * 24 * 14 * 1000),
       // secure: process.env.NODE_ENV === 'production' ? true : false,
       secure: true,
