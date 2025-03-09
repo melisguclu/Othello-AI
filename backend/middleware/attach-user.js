@@ -1,18 +1,30 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/user');
 
-const attachUser = (req, res, next) => {
-  const token = req.cookies.token;
-
-  if (!token) {
-    return next(); //if there is no token attachUser will not attach any user to the request object
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (!err) {
-      req.user = decoded; // decoded contains the payload of the JWT
+const attachUser = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return next();
     }
+
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+      return next();
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded._id).select('-password');
+    
+    if (!user) {
+      return next();
+    }
+
+    req.user = user;
     next();
-  });
+  } catch (error) {
+    next();
+  }
 };
 
 module.exports = attachUser;

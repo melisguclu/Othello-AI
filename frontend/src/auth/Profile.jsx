@@ -26,17 +26,16 @@ export default function Profile() {
 
   const handleLogout = async () => {
     try {
-      await api.post('/auth/logout', {}, { withCredentials: true });
+      await api.post('/auth/logout');
+      localStorage.removeItem('token');
       setUser(null);
       navigate('/login');
     } catch (error) {
-      console.error('Logout Error:', error);
+      console.error('Logout error:', error);
     }
   };
 
   useEffect(() => {
-    // console.log('User:', user);
-
     if (!user) {
       return;
     }

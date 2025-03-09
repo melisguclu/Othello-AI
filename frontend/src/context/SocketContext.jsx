@@ -11,8 +11,6 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('token');
 
-    // console.log('token for websocket:', token || 'no token found');
-
     const newSocket = io(import.meta.env.VITE_SOCKET_URL, {
       withCredentials: true,
       auth: token ? { token } : {},

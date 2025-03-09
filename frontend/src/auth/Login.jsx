@@ -26,28 +26,28 @@ export default function Login() {
     e.preventDefault();
     const { email, password } = data;
     try {
-      const response = await api.post(
-        '/auth/login',
-        { email, password },
-        { withCredentials: true }
-      );
+      const response = await api.post('/auth/login', { email, password });
 
       if (response.data.error) {
         toast.error(response.data.error);
-      } else {
-        const profileResponse = await api.get('/auth/profile', {
-          withCredentials: true,
-        });
+        return;
+      }
 
-        localStorage.setItem('token', response.data.token); //save token in local storage
-        setUser(profileResponse.data);
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
 
-        setData({ email: '', password: '' });
-        toast.success(response.data.message);
-        navigate('/profile');
+        try {
+          const profileResponse = await api.get('/auth/profile');
+          setUser(profileResponse.data);
+          setData({ email: '', password: '' });
+          toast.success('Login successful');
+          navigate('/profile');
+        } catch (profileError) {
+          toast.error('Login successful but failed to fetch profile');
+        }
       }
     } catch (error) {
-      toast.error(error.response?.data.error || 'Something went wrong');
+      toast.error(error.response?.data?.error || 'Login failed');
     }
   };
 

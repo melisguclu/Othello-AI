@@ -79,7 +79,6 @@ const Game = () => {
     };
 
     const handlePlayerLeft = () => {
-      console.log('Opponent left the room.');
       setWaitingForPlayer(true);
       setGameStarted(false);
     };
@@ -182,7 +181,6 @@ const Game = () => {
 
     if (blackValidMoves.length === 0 && whiteValidMoves.length === 0) {
       if (!gameOver) {
-        console.log('Both players have no valid moves. Game Over.');
         checkGameOver(board);
       }
       return;
@@ -190,14 +188,12 @@ const Game = () => {
 
     //if no valid moves for current player skip turn
     if (currentPlayer === 'B' && blackValidMoves.length === 0) {
-      console.log('B has no valid moves');
       toast.error('Black has no valid moves. Skipping turn.');
       setCurrentPlayer('W');
       return;
     }
 
     if (currentPlayer === 'W' && whiteValidMoves.length === 0) {
-      console.log('W has no valid moves');
       toast.error('White has no valid moves. Skipping turn.');
       setCurrentPlayer('B');
       return;
@@ -289,11 +285,9 @@ const Game = () => {
 
   const saveGameToDatabase = async (gameData) => {
     try {
-      console.log('Sending game data:', gameData);
       const response = await api.post('/games/save', gameData, {
         withCredentials: true,
       });
-      console.log('Game saved successfully:', response.data);
     } catch (error) {
       console.error(
         'Error saving game:',

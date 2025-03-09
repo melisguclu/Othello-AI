@@ -21,23 +21,15 @@ const io = new Server(server, {
   },
 });
 
-// const corsOptions = {
-//   origin: 'http://localhost:5173', 
-//   credentials: true,
-// };
-
 const rooms = {}; 
 
 io.on('connection', (socket) => {
-  console.log(`A user connected: ${socket.id}`);
 
   socket.on('joinRoom', (roomId) => {
     if (!roomId) {
-      console.error('Room ID is missing');
       return;
     }
     socket.join(roomId);
-    console.log(`User ${socket.id} joined room ${roomId}`);
 
     if (!rooms[roomId]) {
       rooms[roomId] = {
@@ -56,8 +48,6 @@ io.on('connection', (socket) => {
     rooms[roomId].players.push(socket.id);
     rooms[roomId].playerColors[socket.id] = assignedColor;
 
-    // console.log(`User ${socket.id} assigned color: ${assignedColor}`);
-
     socket.emit('gameState', {
       board: rooms[roomId].board,
       currentPlayer: rooms[roomId].currentPlayer,
@@ -73,7 +63,6 @@ io.on('connection', (socket) => {
     const { row, col, player } = move;
 
     if (rooms[roomId].playerColors[playerId] !== player) {
-      // console.log(`Invalid move attempt by ${playerId}. Not their turn.`);
       return;
     }
   
@@ -89,8 +78,6 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    // console.log(`A user disconnected: ${socket.id}`);
-
     let userRoomId = null;
     for (const [roomId, room] of Object.entries(rooms)) {
       if (room.players.includes(socket.id)) {
@@ -102,7 +89,6 @@ io.on('connection', (socket) => {
     }
 
     if (userRoomId) {
-      // console.log(`User ${socket.id} left room ${userRoomId}`);
       io.to(userRoomId).emit('playerLeft');
     }
   });
@@ -113,7 +99,6 @@ io.on('connection', (socket) => {
 mongoose.connect(process.env.MONGO_URL).then(() => console.log('Connected to MongoDB')).catch((err) => console.error('MongoDB Connection Error:', err));
 
 app.use(cookieParser());
-// app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.urlencoded({ extended: false }));

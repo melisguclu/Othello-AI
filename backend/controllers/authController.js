@@ -70,21 +70,12 @@ const loginUser = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '1d' } // Token valid for 1 day
     );
-    console.log('Token:', token);
 
-    // Send cookie with token
-    return res
-    .cookie('token', token, {
-      domain: process.env.COOKIE_DOMAIN,
-      httpOnly: true,
-      // path: "/",
-      expires: new Date(Date.now() + 60 * 60 * 24 * 14 * 1000),
-      // secure: process.env.NODE_ENV === 'production' ? true : false,
-      secure: true,
-      // sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
-      sameSite: 'None',
-    })
-    .json({ message: 'Login successful', user });
+    return res.json({ 
+      message: 'Login successful', 
+      user,
+      token 
+    });
 
   } catch (error) {
     console.error('Login Error:', error);
@@ -97,12 +88,6 @@ const getProfile = (req, res) =>{
 }
 
 const logoutUser = (req, res) => {
-  res.clearCookie('token', {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'none',
-  });
-
   res.status(200).json({ message: 'Logout successful' });
 };
 
