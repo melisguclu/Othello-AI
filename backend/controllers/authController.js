@@ -75,8 +75,7 @@ const loginUser = async (req, res) => {
     // Send cookie with token
     return res
     .cookie('token', token, {
-      // domain: process.env.COOKIE_DOMAIN,
-      domain: 'europe-west1.run.app',
+      domain: process.env.COOKIE_DOMAIN,
       httpOnly: true,
       // path: "/",
       expires: new Date(Date.now() + 60 * 60 * 24 * 14 * 1000),
