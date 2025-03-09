@@ -59,7 +59,7 @@ export default function Footer() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <a
-                  href="https://github.com/melisguclu"
+                  href="https://github.com/melisguclu/Othello-AI"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={githubIconStyle}

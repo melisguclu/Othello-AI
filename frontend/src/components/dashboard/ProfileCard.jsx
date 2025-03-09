@@ -13,10 +13,13 @@ import Avatar2 from '@/assets/avatar2.png';
 import Avatar3 from '@/assets/avatar3.jpg';
 
 export default function ProfileCard({ user, handleLogout }) {
-  const [selectedAvatar, setSelectedAvatar] = useState(Avatar1);
+  const [selectedAvatar, setSelectedAvatar] = useState(() => {
+    return localStorage.getItem('selectedAvatar') || Avatar1;
+  });
 
   const handleAvatarChange = (avatar) => {
     setSelectedAvatar(avatar);
+    localStorage.setItem('selectedAvatar', avatar);
   };
 
   return (
